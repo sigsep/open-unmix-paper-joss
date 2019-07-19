@@ -29,65 +29,106 @@ date: 17 July 2019
 bibliography: paper.bib
 ---
 
-# Summary
+# Abstract
 
-The forces on stars, galaxies, and dark matter under external gravitational
-fields lead to the dynamical evolution of structures in the universe. The orbits
-of these bodies are therefore key to understanding the formation, history, and
-future state of galaxies. The field of "galactic dynamics," which aims to model
-the gravitating components of galaxies to study their structure and evolution,
-is now well-established, commonly taught, and frequently used in astronomy.
-Aside from toy problems and demonstrations, the majority of problems require
-efficient numerical tools, many of which require the same base code (e.g., for
-performing numerical orbit integration).
+Music separation is very active research topic...
 
-``Gala`` is an Astropy-affiliated Python package for galactic dynamics. Python
-enables wrapping low-level languages (e.g., C) for speed without losing
-flexibility or ease-of-use in the user-interface. The API for ``Gala`` was
-designed to provide a class-based and user-friendly interface to fast (C or
-Cython-optimized) implementations of common operations such as gravitational
-potential and force evaluation, orbit integration, dynamical transformations,
-and chaos indicators for nonlinear dynamics. ``Gala`` also relies heavily on and
-interfaces well with the implementations of physical units and astronomical
-coordinate systems in the ``Astropy`` package [@astropy] (``astropy.units`` and
-``astropy.coordinates``).
+``Open-Unmix`` is a reference implementation of a state-of-the-art deep learning based
+music separation model. The code is targeted at researchers and users as it was designed
+from the ground up to...
 
-``Gala`` was designed to be used by both astronomical researchers and by
-students in courses on gravitational dynamics or astronomy. It has already been
-used in a number of scientific publications [@Pearson:2017] and has also been
-used in graduate courses on Galactic dynamics to, e.g., provide interactive
-visualizations of textbook material [@Binney:2008]. The combination of speed,
-design, and support for Astropy functionality in ``Gala`` will enable exciting
-scientific explorations of forthcoming data releases from the *Gaia* mission
-[@gaia] by students and experts alike.
+- deliver state-of-the-art results
+- being open-source
+- basis for future research
 
-# Mathematics
+# Introduction
 
-Single dollars ($) are required for inline mathematics e.g. $f(x) = e^{\pi/x}$
+- Explain the story of music separation and how it got popular in research
+- list applications
+- Explain how and when deep neural network based music separation outperformed existing methods.
+- Now, there are also commercial systems based on machine learning were released _Audionamix XTRAX STEMS_ or _IZOTOPE RX 7_
+- In the open there are several source separation libraries that aimed to implement a bunch of methods
 
-Double dollars make self-standing equations:
+### openBlissart
 
-$$\Theta(x) = \left\{\begin{array}{l}
-0\textrm{ if } x < 0\cr
-1\textrm{ else}
-\end{array}\right.$$
+- presented in [@weninger11]
+- represents state-of-the-art from 2011 (NMF)
 
-# Citations
+### Flexible Audio Source SeparationToolbox(FASST) 
 
-Citations to entries in paper.bib should be in
-[rMarkdown](http://rmarkdown.rstudio.com/authoring_bibliographies_and_citations.html)
-format.
+- Presented in [@salaun12]
+- Written in MATLAB and C++
+- outdated methods
 
-For a quick reference, the following citation commands can be used:
-- `@author:2001`  ->  "Author et al. (2001)"
-- `[@author:2001]` -> "(Author et al., 2001)"
-- `[@author1:2001; @author2:2001]` -> "(Author1 et al., 2001; Author2 et al., 2002)"
+### untwist
 
-# Figures
+- presented in [@roma16]
+- doesn't seem ready to use
+- outdated methods
 
-# Acknowledgements
+### nussl
 
-We acknowledge contributions from Brigitta Sipocz, Syrtis Major, and Semyeong
-Oh, and support from Kathryn Johnston during the genesis of this project.
+- presented in [@manilow18]
+- complex and focussed on signal processing methods instead of DNNs
+- built-in interfaces for common evaluation metrics, data sets, or loading pre-trained models.
+
+While these frameworks attracted some users (github stars – nussl: 196 stars, untwist: 95, pyfasst 79, openblissart 77), they didn't get much traction compared to specific deep learning methods.
+
+The most popular public repositories for deep learning are `MTG/DeepConvSep` from [@chandna17] and `f90/Wave-U-Net` from [@stoeller] which are more popular than all the previously mentioned separation frameworks together.
+
+Also mention because they are very popular:
+
+- [https://github.com/andabi/music-source-separation] Tensorflow
+- [https://github.com/posenhuang/deeplearningsourceseparation]  Matlab
+
+## The gap
+
+- An open-source separation method that performs as good as state-of-the-art was missing now for >4 years
+- Many users currently cannot assess if a method performs as good as state-of-the-art thus a true open baseline is missing.
+- Result is that it is often believed that eg. spectrogram u-net outperforms older methods (=not true).
+- today many new users approach music separation from the ML perspective but they lack domain knowledge and therefore might produce subpar results (as this is still important) 
+- Many methods/researchers face difficulties in pre and post-processing, since we are experienced researchers in this area we put our combined domain knowledge into _open-unmix_, its data loading and post-processing
+- these ML researchers are not looking for a general framework on source separation but a SOTA method that is easy to extend.
+- Deep learning is field with fast progress: techniques will probably stay for a while, but frameworks will rapidly evovlve
+- _Open-unmix_ therefore is developed in parallel to cover the most number of users... tensorflow/keras, pytorch, nnabla
+- The pytorch version will serve as the reference version due its simplicity and easyness to extend the code
+- the tensorflow version will be release later when TF 2.0 is stable. 
+- version for nnabla will be close the pytorch code "example" and will be released together with the tensorfloe version.
+
+# Open-Unmix (technical details)
+
+- how does it work
+- data loading -> data sampling -> preprocessing -> model/training -> inference -> wiener filter
+
+## why LSTM?
+
+- Recent Research on End-To-End models are tempting, because they can get away with domain knowledge typical required produce good results
+- However, none of the modern networks design produced state-of-the-art results (e.g. https://github.com/francesclluis/source-separation-wavenet based on [https://arxiv.org/abs/1810.12187])
+- Even worse, methods that use proven network architecture such as RNNs often didn't match state-of-art results
+
+## The source separation community
+
+- Open-unmix is part of a whole ecosystem of software, datasets and online resources: the `sigsep` community
+- we provide MUSDB18 and MUSDB18-HQ, the largest freely available dataset, this comes with a complete toolchain to easily parse and read the dataset such as [musdb] and [mus]
+- [museval], is mostly used evaluation package for source separation
+- we also are the organizers of the largest source separation evaluation campaign
+- in this campaign we noticed: previous state-of-the-art systems could not be matched by newer systems (e.g. UHL2)
+
+## Features
+
+- Modular, easy to extend, using framework agnostic
+- pytorch implementation based on the famous MNIST example. 
+- reproducible code
+- includes unit tests and regression tests
+
+## Results
+
+compare and list link to demo website
+
+# Contributions
+
+Open-Unmix was developed by Fabian-Robert Stöter and Antoine Liutkus at inria Montpellier.
+The design of the deep neural network architecture was done in close collaboration with
+Stefan Uhlich and Yuku Mitsufuji from Sony Coorporation.
 
 # References
