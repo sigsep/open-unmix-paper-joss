@@ -18,12 +18,14 @@ authors:
     affiliation: 1
   - name: Yuki Mitsufuji
     orcid: 0000-0000-0000-0000
-    affiliation: 2
+    affiliation: 3
 affiliations:
  - name: Inria and LIRMM, Montpellier, France
    index: 1
- - name: Sony Europe
+ - name: Sony Europe B.V., Germany
    index: 2
+ - name: Sony Corporate, Japan
+   index: 3
 date: 17 July 2019
 
 bibliography: paper.bib
@@ -46,7 +48,7 @@ from the ground up to...
 - Explain the story of music separation and how it got popular in research
 - list applications
 - Explain how and when deep neural network based music separation outperformed existing methods.
-- Now, there are also commercial systems based on machine learning were released _Audionamix XTRAX STEMS_ or _IZOTOPE RX 7_
+- Now, there are also commercial systems based on machine learning were released _Audionamix XTRAX STEMS_, _IZOTOPE RX 7_ or _AudioSourceRE_
 - In the open there are several source separation libraries that aimed to implement a bunch of methods
 
 ### openBlissart
@@ -101,7 +103,7 @@ Also mention because they are very popular:
 - data loading -> data sampling -> preprocessing -> model/training -> inference -> wiener filter
 
 ## why LSTM?
-
+- Open-unmix can easily be extended to include different models. Currently implemented: LSTM network
 - Recent Research on End-To-End models are tempting, because they can get away with domain knowledge typical required produce good results
 - However, none of the modern networks design produced state-of-the-art results (e.g. https://github.com/francesclluis/source-separation-wavenet based on [https://arxiv.org/abs/1810.12187])
 - Even worse, methods that use proven network architecture such as RNNs often didn't match state-of-art results
@@ -127,8 +129,8 @@ compare and list link to demo website
 
 # Contributions
 
-Open-Unmix was developed by Fabian-Robert Stöter and Antoine Liutkus at inria Montpellier.
+Open-Unmix was developed by Fabian-Robert Stöter and Antoine Liutkus at Inria Montpellier.
 The design of the deep neural network architecture was done in close collaboration with
-Stefan Uhlich and Yuku Mitsufuji from Sony Coorporation.
+Stefan Uhlich and Yuku Mitsufuji from Sony Corporation.
 
 # References
