@@ -43,10 +43,28 @@ from the ground up to...
 
 # Introduction
 
+- open up to deep learning community,
+- machine learning people don't know how to handle audio.
 - Explain the story of music separation and how it got popular in research
 - list applications
 - Explain how and when deep neural network based music separation outperformed existing methods.
 - Now, there are also commercial systems based on machine learning were released _Audionamix XTRAX STEMS_ or _IZOTOPE RX 7_
+
+- context, vision, SiSEC 2007, compare performance community, promote research.
+- datasets, tools.
+- reference baseline.
+- what is a baseline? Many implementations from legacy methods. Modern methods as state-of-the-art. A few open implementations but none of them art state-of-the-art.
+- what do we call baseline?
+
+- where is research to be expected:
+  - why  do we need domain knowledge?
+  - crucial part for domain knowledge in audio?
+  - domain knowledge, where is the knowledge?
+  - representations (needs tested model)
+  - model (needs tested pre-and postprocess)
+
+##  Related libraries/work
+
 - In the open there are several source separation libraries that aimed to implement a bunch of methods
 
 ### openBlissart
@@ -119,7 +137,7 @@ Also mention because they are very popular:
 - Modular, easy to extend, using framework agnostic
 - pytorch implementation based on the famous MNIST example. 
 - reproducible code
-- includes unit tests and regression tests
+- includes unit tests and regression tests.
 
 ## Results
 
@@ -129,6 +147,6 @@ compare and list link to demo website
 
 Open-Unmix was developed by Fabian-Robert Stöter and Antoine Liutkus at inria Montpellier.
 The design of the deep neural network architecture was done in close collaboration with
-Stefan Uhlich and Yuku Mitsufuji from Sony Coorporation.
+Stefan Uhlich and Yuki Mitsufuji from Sony Coorporation.
 
 # References
