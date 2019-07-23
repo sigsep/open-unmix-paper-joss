@@ -33,20 +33,20 @@ bibliography: paper.bib
 
 # Abstract
 
-Music separation is very active research topic...
-
-``Open-Unmix`` is a reference implementation of a state-of-the-art deep learning based
-music separation model. The code is targeted at researchers and users as it was designed
-from the ground up to...
-
-- deliver state-of-the-art results
-- being open-source
-- basis for future research
+- What is Music separation / applications
+- ``Open-Unmix`` is a reference implementation of a state-of-the-art deep learning based
+music separation model. 3 Frameworks.
+- The code is targeted at researchers and users as it was designed.
+- machine learning people don't know how to handle audio.
+- Domain knowledge is needed to set up a successful pipeline.
+- state-of-the-art results (open).
+- being open-source.
+- basis for future research.
+- open unmix as the missing piece for the community.
 
 # Introduction
 
 - open up to deep learning community,
-- machine learning people don't know how to handle audio.
 - Explain the story of music separation and how it got popular in research
 - list applications
 - Explain how and when deep neural network based music separation outperformed existing methods.
