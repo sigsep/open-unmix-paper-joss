@@ -24,7 +24,7 @@ affiliations:
    index: 1
  - name: Sony Europe B.V., Germany
    index: 2
- - name: Sony Corporate, Japan
+ - name: Sony Corporation, Japan
    index: 3
 date: 17 July 2019
 
