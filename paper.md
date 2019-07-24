@@ -33,16 +33,12 @@ bibliography: paper.bib
 
 # Abstract
 
-- What is Music separation / applications
-- ``Open-Unmix`` is a reference implementation of a state-of-the-art deep learning based
-music separation model. 3 Frameworks.
-- The code is targeted at researchers and users as it was designed.
-- machine learning people don't know how to handle audio.
-- Domain knowledge is needed to set up a successful pipeline.
-- state-of-the-art results (open).
-- being open-source.
-- basis for future research.
-- open unmix as the missing piece for the community.
+Music source separation is the task of demixing music into individual instruments, e.g., demixing songs into vocals and accompaniment.
+Such a separation has many applications ranging from audio restoration to upmixing.
+Until now, no open-source implementation which achieves state-of-the-art results was available.
+``Open-Unmix'' closes this gap by providing a open reference implementation which achieves state-of-the-art performance.
+Our design goal was to develop code that is targeted at researchers as well as users.
+With ``Open-Unmix'' we want to give the community the missing piece to do their own research and that it becomes the basis for future research.
 
 # Introduction
 
