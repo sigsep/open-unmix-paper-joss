@@ -1,5 +1,5 @@
 ---
-title: 'Open-Unmix - a reference implementation for audio source separation'
+title: 'Open-Unmix - A reference implementation for audio source separation'
 tags:
   - Python
   - audio
@@ -36,9 +36,9 @@ bibliography: paper.bib
 Music source separation is the task of demixing music into individual instruments, e.g., demixing songs into vocals and accompaniment.
 Such a separation has many applications ranging from audio restoration to upmixing.
 Until now, no open-source implementation which achieves state-of-the-art results was available.
-``Open-Unmix'' closes this gap by providing a open reference implementation which achieves state-of-the-art performance.
+'Open-Unmix' closes this gap by providing a open reference implementation which achieves state-of-the-art performance.
 Our design goal was to develop code that is targeted at researchers as well as users.
-With ``Open-Unmix'' we want to give the community the missing piece to do their own research and that it becomes the basis for future research.
+With 'Open-Unmix' we want to give the community the missing piece to do their own research and that it becomes the basis for future research.
 
 # Introduction
 
