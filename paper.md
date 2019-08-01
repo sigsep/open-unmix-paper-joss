@@ -16,7 +16,7 @@ authors:
   - name: Antoine Liutkus
     orcid: 0000-0000-0000-0000
     affiliation: 1
-  - name: Yuki Mitsufuji
+  - name: Yuki Mitsufujizen
     orcid: 0000-0000-0000-0000
     affiliation: 3
 affiliations:
@@ -33,12 +33,14 @@ bibliography: paper.bib
 
 # Abstract
 
-Music source separation is the task of demixing music into individual instruments, e.g., demixing songs into vocals and accompaniment.
-Such a separation has many applications ranging from audio restoration to upmixing.
-Until now, no open-source implementation which achieves state-of-the-art results was available.
-'Open-Unmix' closes this gap by providing a open reference implementation which achieves state-of-the-art performance.
-Our design goal was to develop code that is targeted at researchers as well as users.
-With 'Open-Unmix' we want to give the community the missing piece to do their own research and that it becomes the basis for future research.
+Music source separation is the task of decomposing music into its original components e.g. yielding separated stems for the vocals, bass and drums.
+Such a separation has many applications ranging from rearranging/repurposing the stems (remixing, repanning, upmixing) to full extraction (karaoke, sample creation, audio restoration).
+Music separation has a long history of scientific activity as it is known to be a very challenging problem.
+In recent years, deep learning based systems - for the first time - yielded high quality separations that also lead to increased commercial interest.
+However, until now, no open-source implementation that achieves state-of-the-art results was available.
+_Open-Unmix_ closes this gap by providing a reference implementation based on deep neural network model.
+It serves two main purposes: Firstly, to accelerate academic research as the _open-unmix_ provides implementations for the most popular deep learning framework, giving researchers a flexible way to reproduce results; Secondly, we provide pre-trained model for end users and even artists to try use source separation.
+Furthermore, we designed _Open-Unmix_ to be the missing piece in an open music separation community where we already provide open datasets, software utilities and open evaluation to fosters reproducible research as the basis for future research.
 
 # Introduction
 
