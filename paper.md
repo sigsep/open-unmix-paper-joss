@@ -113,7 +113,11 @@ Also mention because they are very popular:
 - the tensorflow version will be release later when TF 2.0 is stable. 
 - version for nnabla will be close the pytorch code "example" and will be released together with the tensorfloe version.
 
-# Open-Unmix (technical details)
+# Open-Unmix (UMX) (technical details)
+
+We will now give more technical details about UMX. Fig. \ref{} shows the basic approach. During training, we learn a DNN which can be later used for separating songs.
+
+![Block diagram of UMX](UMX_BlockDiagram.svg)
 
 - how does it work
 - data loading -> data sampling -> preprocessing -> model/training -> inference -> wiener filter
