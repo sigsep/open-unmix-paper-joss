@@ -14,13 +14,13 @@ authors:
     orcid: 0000-0000-0000-0000
     affiliation: 2
   - name: Antoine Liutkus
-    orcid: 0000-0000-0000-0000
+    orcid: 0000-0002-3458-6498
     affiliation: 1
   - name: Yuki Mitsufuji
     orcid: 0000-0000-0000-0000
     affiliation: 3
 affiliations:
- - name: Inria and LIRMM, Montpellier, France
+ - name: Inria and LIRMM, University of Montpellier, France
    index: 1
  - name: Sony Europe B.V., Germany
    index: 2
@@ -33,14 +33,14 @@ bibliography: paper.bib
 
 # Abstract
 
-Music source separation is the task of decomposing music into its original components e.g. yielding separated stems for the vocals, bass and drums.
+Music source separation is the task of decomposing music into its constitutive components e.g. yielding separated stems for the vocals, bass and drums.
 Such a separation has many applications ranging from rearranging/repurposing the stems (remixing, repanning, upmixing) to full extraction (karaoke, sample creation, audio restoration).
 Music separation has a long history of scientific activity as it is known to be a very challenging problem.
 In recent years, deep learning based systems - for the first time - yielded high quality separations that also lead to increased commercial interest.
 However, until now, no open-source implementation that achieves state-of-the-art results was available.
-_Open-Unmix_ closes this gap by providing a reference implementation based on deep neural network model.
-It serves two main purposes: Firstly, to accelerate academic research as the _open-unmix_ provides implementations for the most popular deep learning framework, giving researchers a flexible way to reproduce results; Secondly, we provide pre-trained model for end users and even artists to try use source separation.
-Furthermore, we designed _Open-Unmix_ to be the missing piece in an open music separation community where we already provide open datasets, software utilities and open evaluation to fosters reproducible research as the basis for future research.
+_Open-Unmix_ closes this gap by providing a reference implementation based on deep neural networks.
+It serves two main purposes: Firstly, to accelerate academic research as the _open-unmix_ provides implementations for the most popular deep learning framework, giving researchers a flexible way to reproduce results; Secondly, we provide a pre-trained model for end users and even artists to try and use source separation.
+Furthermore, we designed _Open-Unmix_ to be one core component in an open ecosystem on music separation, where we already provide open datasets, software utilities and open evaluation to fosters reproducible research as the basis of future development.
 
 # Introduction
 
@@ -72,7 +72,7 @@ Furthermore, we designed _Open-Unmix_ to be the missing piece in an open music s
 - presented in [@weninger11]
 - represents state-of-the-art from 2011 (NMF)
 
-### Flexible Audio Source SeparationToolbox(FASST) 
+### Flexible Audio Source SeparationToolbox(FASST)
 
 - Presented in [@salaun12]
 - Written in MATLAB and C++
@@ -104,13 +104,13 @@ Also mention because they are very popular:
 - An open-source separation method that performs as good as state-of-the-art was missing now for >4 years
 - Many users currently cannot assess if a method performs as good as state-of-the-art thus a true open baseline is missing.
 - Result is that it is often believed that eg. spectrogram u-net outperforms older methods (=not true).
-- today many new users approach music separation from the ML perspective but they lack domain knowledge and therefore might produce subpar results (as this is still important) 
+- today many new users approach music separation from the ML perspective but they lack domain knowledge and therefore might produce subpar results (as this is still important)
 - Many methods/researchers face difficulties in pre and post-processing, since we are experienced researchers in this area we put our combined domain knowledge into _open-unmix_, its data loading and post-processing
 - these ML researchers are not looking for a general framework on source separation but a SOTA method that is easy to extend.
 - Deep learning is field with fast progress: techniques will probably stay for a while, but frameworks will rapidly evovlve
 - _Open-unmix_ therefore is developed in parallel to cover the most number of users... tensorflow/keras, pytorch, nnabla
 - The pytorch version will serve as the reference version due its simplicity and easyness to extend the code
-- the tensorflow version will be release later when TF 2.0 is stable. 
+- the tensorflow version will be release later when TF 2.0 is stable.
 - version for nnabla will be close the pytorch code "example" and will be released together with the tensorfloe version.
 
 # Open-Unmix (UMX) (technical details)
@@ -139,7 +139,7 @@ We will now give more technical details about UMX. Fig. \ref{} shows the basic a
 ## Features
 
 - Modular, easy to extend, using framework agnostic
-- pytorch implementation based on the famous MNIST example. 
+- pytorch implementation based on the famous MNIST example.
 - reproducible code
 - includes unit tests and regression tests.
 
@@ -150,7 +150,7 @@ compare and list link to demo website
 # Contributions
 
 Open-Unmix was developed by Fabian-Robert Stöter and Antoine Liutkus at Inria Montpellier.
-The design of the deep neural network architecture was done in close collaboration with
+The research concerning the deep neural network architecture as well as the training process was done in close collaboration with
 Stefan Uhlich and Yuki Mitsufuji from Sony Corporation.
 
 # References
