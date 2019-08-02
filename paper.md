@@ -16,7 +16,7 @@ authors:
   - name: Antoine Liutkus
     orcid: 0000-0000-0000-0000
     affiliation: 1
-  - name: Yuki Mitsufujizen
+  - name: Yuki Mitsufuji
     orcid: 0000-0000-0000-0000
     affiliation: 3
 affiliations:
