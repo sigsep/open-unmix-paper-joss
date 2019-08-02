@@ -42,29 +42,38 @@ _Open-Unmix_ closes this gap by providing a reference implementation based on de
 It serves two main purposes: Firstly, to accelerate academic research as the _open-unmix_ provides implementations for the most popular deep learning framework, giving researchers a flexible way to reproduce results; Secondly, we provide a pre-trained model for end users and even artists to try and use source separation.
 Furthermore, we designed _Open-Unmix_ to be one core component in an open ecosystem on music separation, where we already provide open datasets, software utilities and open evaluation to fosters reproducible research as the basis of future development.
 
-# Introduction
+# Background
 
-- open up to deep learning community,
-- Explain the story of music separation and how it got popular in research
-- list applications
-- Explain how and when deep neural network based music separation outperformed existing methods.
+<!-- - Explain the story of music separation and how it got popular in research -->
+Separating music signals is a problem researchers have been fascinated about for over 50 years. This is partly due to the fact that, mathematically, there exist no closed-form solution for the typical problem of many sources captured by a single microphone.
+As the problem difficult to solve on general signal, researchers instead focussed on strong assumptions about the way the signal were recorded and mixed. A large number of these methods are centered around "traditional" signal processing methods, for a more detailed overview see [@rafii17] and [@cano19].
+<!-- - Explain how and when deep neural network based music separation outperformed existing methods. -->
+Many of these classical methods are hand-crafted and tuned to a small number of music recordings [@sisec10, @sisec11, @sisec13].
+Systematic objective evaluation of these methods, however, was never feasible as freely available dataset were didn't exist.
+In fact, commercial music is well known to be subject to various copyright protection laws and therefore generally not available for scientific distribution.
+Furthermore the original separated stems are precious artifacts of the artistic process of audio engineering and mastering and therefore usually not available for sale.
+ [@rafii17]
+In the past five years, deep neural networks(DNNs) have not only been successfully used for this task but they are setting the state-of-the art in this domain as can be seen by the results of the community-based signal separation evaluation campaign(SiSEC) [@sisec15, @sisec16, @sisec18].
+Similar to other audio tasks such as automatic speech recognition, the success of machine learning models for source separation was directly linked to the release of publicly available datasets.
+
 - Now, there are also commercial systems based on machine learning were released _Audionamix XTRAX STEMS_ or _IZOTOPE RX 7_  or _AudioSourceRE_
 
-- context, vision, SiSEC 2007, compare performance community, promote research.
 - datasets, tools.
 - reference baseline.
+
+## Baseline Implementations
+
 - what is a baseline? Many implementations from legacy methods. Modern methods as state-of-the-art. A few open implementations but none of them art state-of-the-art.
 - what do we call baseline?
 
+<!-- - open up to deep learning community -->
 - where is research to be expected:
+- context, vision, SiSEC 2007, compare performance community, promote research.
   - why  do we need domain knowledge?
   - crucial part for domain knowledge in audio?
   - domain knowledge, where is the knowledge?
   - representations (needs tested model)
   - model (needs tested pre-and postprocess)
-
-##  Related libraries/work
-
 - In the open there are several source separation libraries that aimed to implement a bunch of methods
 
 ### openBlissart
@@ -107,13 +116,18 @@ Also mention because they are very popular:
 - today many new users approach music separation from the ML perspective but they lack domain knowledge and therefore might produce subpar results (as this is still important)
 - Many methods/researchers face difficulties in pre and post-processing, since we are experienced researchers in this area we put our combined domain knowledge into _open-unmix_, its data loading and post-processing
 - these ML researchers are not looking for a general framework on source separation but a SOTA method that is easy to extend.
-- Deep learning is field with fast progress: techniques will probably stay for a while, but frameworks will rapidly evovlve
+- Deep learning is field with fast progress: techniques will probably stay for a while, but frameworks will rapidly evolve
 - _Open-unmix_ therefore is developed in parallel to cover the most number of users... tensorflow/keras, pytorch, nnabla
 - The pytorch version will serve as the reference version due its simplicity and easyness to extend the code
 - the tensorflow version will be release later when TF 2.0 is stable.
 - version for nnabla will be close the pytorch code "example" and will be released together with the tensorfloe version.
 
 # Open-Unmix (UMX) (technical details)
+
+![](https://docs.google.com/drawings/d/e/2PACX-1vTPoQiPwmdfET4pZhue1RvG7oEUJz7eUeQvCu6vzYeKRwHl6by4RRTnphImSKM0k5KXw9rZ1iIFnpGW/pub?w=959&h=308)
+
+- how does it work
+- data loading -> data sampling -> preprocessing -> model/training -> inference -> wiener filter
 
 We will now give more technical details about UMX. Fig. \ref{} shows the basic approach. During training, we learn a DNN which can be later used for separating songs.
 
@@ -140,6 +154,9 @@ The most critical aspects of the system are the following:
    - _Batch normalization_ long proved important for stable training, because it makes the different batches more similar in terms of distributions. In the case of audio where signal dynamics can be very important, this is crucial.
 
 ## why LSTM?
+
+[@Hochreiter97]
+
 - Open-unmix can easily be extended to include different models. Currently implemented: LSTM network
 - Recent Research on End-To-End models are tempting, because they can get away with domain knowledge typical required produce good results
 - However, none of the modern networks design produced state-of-the-art results (e.g. https://github.com/francesclluis/source-separation-wavenet based on [https://arxiv.org/abs/1810.12187])
