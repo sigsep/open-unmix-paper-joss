@@ -92,7 +92,7 @@ Furthermore, we designed _Open-Unmix_ to be one core component in an open ecosys
 
 While these frameworks attracted some users (github stars – nussl: 196 stars, untwist: 95, pyfasst 79, openblissart 77), they didn't get much traction compared to specific deep learning methods.
 
-The most popular public repositories for deep learning are `MTG/DeepConvSep` from [@chandna17] and `f90/Wave-U-Net` from [@stoeller] which are more popular than all the previously mentioned separation frameworks together.
+The most popular public repositories for deep learning are `MTG/DeepConvSep` from [@chandna17] and `f90/Wave-U-Net` from [stoller] which are more popular than all the previously mentioned separation frameworks together.
 
 Also mention because they are very popular:
 
@@ -117,7 +117,7 @@ Also mention because they are very popular:
 
 We will now give more technical details about UMX. Fig. \ref{} shows the basic approach. During training, we learn a DNN which can be later used for separating songs.
 
-![Block diagram of UMX](UMX_BlockDiagram.svg)
+![Block diagram of UMX](UMX_BlockDiagram.pdf)
 
 [INSERT THE FIGURE FOR THE UMX MODEL HERE]
 The design choices made for _Open-unmix_ have sought to reach two somewhat contradictory objectives. Its first aim is to have state-of-the art performance, and its second aim is to still be easily understandable, so that it could serve as a basis for research allowing improved performance in the future.
