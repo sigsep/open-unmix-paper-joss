@@ -73,33 +73,68 @@ _Nussl_ is a very recent framework, presented in [@manilow18]. It includes a lar
 The main problem with all of these available tools is that they do not deliver state-of-the-art results. In fact, no open-source system exist today that matches the performance of the state-of-the-art system proposed more than 4 years [uhlich14].
 We believe that the lack of such a baseline has a serious negative impact on future research on source separation.
 In fact, many new methods that were published in the last years, are usually compared to their own baselines, thus showing relative instead of absolute performance so that other researchers cannot assess if a method performs as good as state-of-the-art.
-Also the lack of a common community accepted reference method may miss-guide new researchers and students that enter the field of music separation. The result of this can be observed by looking at the popularity of the above mentioned music separation frameworks on github: all of the frameworks mentioned above combined are less popular than specific papers that were accompanied by code (nussl: 196 stars, untwist: 95, pyfasst 79, openblissart 77) such as `MTG/DeepConvSep` from [@chandna17] (340 stars) and `f90/Wave-U-Net` from [stoller] (300 stars).
+Also, the lack of a common community accepted reference method potentially  miss-guides researchers and students that enter the field of music separation. The result of this can be observed by looking at the popularity of the above mentioned music separation frameworks on github: all of the frameworks mentioned above combined are less popular than two recent deep learning papers that were accompanied by code (nussl: 196 stars, untwist: 95, pyfasst 79, openblissart 77) such as `MTG/DeepConvSep` from [@chandna17] (340 stars) and `f90/Wave-U-Net` from [stoller] (300 stars). Thus, users are confused if this can be considered state-of-the-art.
 
 # Open-Unmix 
 
-## Design Choices / Requirements
+Today many new research in signal processing comes from applying machine learning to specific tasks such as music separation.
+With the rise of simple to use machine learning frameworks such as [Keras], [Tensorflow], [Pytorch] or [NNabla], the technical debt of developing a music separation system appears to be very low at first sight.
+However, the lack of domain knowledge about the specifics of music signals results weak performance that, additionally, is difficult to track using learning based algorithms.
+We could observe this problem in [@sisec16, @sisec18], when we organized the source separation evaluation campaign where complex deep models might underperform simpler models just because of subtle differences in pre- and postprocessing. This problems could obviously have been discussed in a more systematic manner if the proposed methods would have be open-source.
+We therefore designed _open-unmix_ to address these issues by relying on procedures that were veriefied by the community or proven to be working well in literature.
 
-today many new users approach music separation from the ML perspective but they lack domain knowledge and therefore might produce subpar results.
-- make people do less misstakes on pre- and postprocessing
-- deliver state-of-the-art results
-- part of sigsep community
-- community driven and maintained
-- closely tight to dataset / MUSDB18
-- simple
-- hackable (MNIST like)
+## Design Choices
 
-## Ready for future research
+When we developed _open-unmix_, we had several design decisions to make both, be ready for future research and allow users to experience separation performance themselves.
+Many methods/researchers face difficulties in pre and post-processing. Since we are experienced researchers in this area we put our combined domain knowledge into _open-unmix_, its data loading and post-processing.
+Furthermore, ML researchers are not looking for a general framework on source separation but a SOTA method that is easy to extend.
 
-- Many methods/researchers face difficulties in pre and post-processing, since we are experienced researchers in this area we put our combined domain knowledge into _open-unmix_, its data loading and post-processing
-- these ML researchers are not looking for a general framework on source separation but a SOTA method that is easy to extend.
-
-Designed so that researchers can easily hack the code to implement
+The aim is to design a system so that researchers can easily hack the code to implement:
 
 - new representations (needs tested model)
 - new architectures (needs tested pre-and postprocess)
 
+### Framework specific vs. framework agnostic
 
-# Open-Unmix (UMX) (technical details)
+_Open-unmix_ is developed in parallel for multiple frameworks to cover the most number of users. Currently we support tensorflow/keras, pytorch, nnabla.
+- The pytorch version will serve as the reference version due its simplicity and easyness to extend the code
+- the tensorflow version will be release later when TF 2.0 is stable.
+- version for nnabla will be close the pytorch code "example" and will be released together with the tensorfloe version.
+
+### Hackable, Fast and simple
+
+- simple to extend
+- not a package
+- hackable (MNIST like)
+- pytorch implementation based on the famous MNIST example.
+- Open-unmix can easily be extended to include different models. Currently implemented: LSTM network
+- Recent Research on End-To-End models are tempting, because they can get away with domain knowledge typical required produce good results
+
+### Reproducible
+
+- reproducible code
+- includes unit tests and regression tests.
+
+## Technical Details
+
+### Datasets and Dataloaders
+
+- Support MUSDB18 dataset
+- Several custom datasets supported through native dataset and dataloader apis Possible points of failure
+- efficient sampling
+- fast data loading (See)
+- essential augmentations [@Uhlich17, something_from_icassp19]
+- However, none of the modern networks design produced state-of-the-art results (e.g. https://github.com/francesclluis/source-separation-wavenet based on [https://arxiv.org/abs/1810.12187])
+
+### Pre-processing
+
+- STFT on the fly
+
+### Post-processing
+
+- norbert details
+
+### Model
 
 ![](https://docs.google.com/drawings/d/e/2PACX-1vTPoQiPwmdfET4pZhue1RvG7oEUJz7eUeQvCu6vzYeKRwHl6by4RRTnphImSKM0k5KXw9rZ1iIFnpGW/pub?w=959&h=308)
 
@@ -108,6 +143,7 @@ Designed so that researchers can easily hack the code to implement
 
 We will now give more technical details about UMX. Fig. \ref{} shows the basic approach. During training, we learn a DNN which can be later used for separating songs.
 
+[@uhlich15, @nugraha16, @uhlich17]
 ![Block diagram of UMX](UMX_BlockDiagram.pdf)
 
 [INSERT THE FIGURE FOR THE UMX MODEL HERE]
@@ -125,55 +161,45 @@ The most critical aspects of the system are the following:
   Although alternative ways to train a separation system have emerged recently, notably through _generative_ strategies trained through adversarial cost functions, they do not lead  to comparable performance still. Even if we acknowledge that such an approach could in theory allow to scale the size of training data since it can be done in an _unpaired_ manner, we feel that this direction is still in progress and cannot be considered state of the art today.  That said, the _Open-unmix_ system can easily be extended to such generative training, and the community is much welcome to exploit it for that purpose.
 
 * __Baseline network__: the constitutive parts of the actual deep model used in _Open-unmix_ only comprise very classical elements. Among them , we can mention:
+   - _LSTM_ [@Hochreiter97]
    - _Fully connected time-distributed layers_ are used for dimension reduction and augmentation, at the input and output sides, respectively. They allow control over the number of parameters of the model and prove to be crucial for generalization.
    - _Skip connections_ are used in two ways: i/ the output to recurrent layers are augmented with their input, and this proved to help convergence. ii/ The output spectrogram is computed as an element-wise multiplication of the input. This means the system actually has to learn _how much each TF bin does belong to the target source_ and not the _actual_ value of that bin. This is _critical_ for obtaining good performance and combining the estimates given for several targets, as done in _Open-unmix_.
    - _Non linearities_ are of three kinds: i/ Rectified Linear  (ReLUE) Units allow intermediate layers to comprise nonnegative activations, which long proved effective in TF modelling. ii/ `tanh` are known to be necessary for a good training of LSTM model, notably because they avoid exploiding input and output. iii/ a `sigmoid` activation is chosen before masking, to mimmick the way legacy systems take the outputs as a _filtering_ of the input.
    - _Batch normalization_ long proved important for stable training, because it makes the different batches more similar in terms of distributions. In the case of audio where signal dynamics can be very important, this is crucial.
 
-* __Data loading__:
+### Training
 
-   - efficient sampling
-   - good data loading
-   - fast 
-   - essential augmentations
+- Cost functions (supervised/adversarial training, clustering-based)
+- Optimization algorithms
+- Data augmentations
+- temporal context, batch size, standardization/scaling, regularization
 
-## why LSTM?
+## Results
 
-[@Hochreiter97]
+### Objective Evaluation
 
-- Open-unmix can easily be extended to include different models. Currently implemented: LSTM network
-- Recent Research on End-To-End models are tempting, because they can get away with domain knowledge typical required produce good results
-- However, none of the modern networks design produced state-of-the-art results (e.g. https://github.com/francesclluis/source-separation-wavenet based on [https://arxiv.org/abs/1810.12187])
-- Even worse, methods that use proven network architecture such as RNNs often didn't match state-of-art results
+compare and list link to demo website
 
+### For Artists
+
+torchub
+
+# Contributions
+
+## Development
+
+Open-Unmix was developed by Fabian-Robert Stöter and Antoine Liutkus at Inria Montpellier.
+The research concerning the deep neural network architecture as well as the training process was done in close collaboration with
+Stefan Uhlich and Yuki Mitsufuji from Sony Corporation.
+
+## Community
+
+In the future we hope the software will be well received by the community. As statet in our contributors agreement..
 ## The source separation community
-
 - Open-unmix is part of a whole ecosystem of software, datasets and online resources: the `sigsep` community
 - we provide MUSDB18 and MUSDB18-HQ, the largest freely available dataset, this comes with a complete toolchain to easily parse and read the dataset such as [musdb] and [mus]
 - [museval], is mostly used evaluation package for source separation
 - we also are the organizers of the largest source separation evaluation campaign
 - in this campaign we noticed: previous state-of-the-art systems could not be matched by newer systems (e.g. UHL2)
-
-## Implementation Details
-
-- _Open-unmix_ is developed in parallel to cover the most number of users... tensorflow/keras, pytorch, nnabla
-- The pytorch version will serve as the reference version due its simplicity and easyness to extend the code
-- the tensorflow version will be release later when TF 2.0 is stable.
-- version for nnabla will be close the pytorch code "example" and will be released together with the tensorfloe version.
-
-- Modular, easy to extend, using framework agnostic
-- pytorch implementation based on the famous MNIST example.
-- reproducible code
-- includes unit tests and regression tests.
-
-## Results
-
-compare and list link to demo website
-
-# Contributions
-
-Open-Unmix was developed by Fabian-Robert Stöter and Antoine Liutkus at Inria Montpellier.
-The research concerning the deep neural network architecture as well as the training process was done in close collaboration with
-Stefan Uhlich and Yuki Mitsufuji from Sony Corporation.
 
 # References
