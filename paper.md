@@ -124,15 +124,15 @@ Releasing _Open-Unmix_ is first and foremost an attempt to provide a reliable im
 
 ![Block diagram of _Open-Unmix_\label{block_diagram}](UMX_BlockDiagram.pdf)
 
-We will give now more technical details about _Open-Unmix_. Fig. \ref{block_diagram} shows the basic approach. During training, we learn a DNN which can be later used for separating songs.
+We will now give more technical details about _Open-Unmix_. Fig. \ref{block_diagram} shows the basic approach. During training, we learn a DNN which can be later used for separating songs.
 
 ### Datasets and Dataloaders
 
 When designing a machine-learnig based method, our first step was to encapsulate cleanly the data-processing aspects.
 
-- __Datasets__: we support the [MUSDB18] dataset, that is most established dataset that we released some years ago. Several other custom options are supported through native dataset and dataloader APIs. This encourages the interested researcher to train _Open-unmix_ model with her/his own data.
-- __Efficient dataloading and transforms__: since preparing the batches for training is often the efficiency bottleneck, extra-care was taken to optimize speed and performance. Here, we use framwork specific data loading API instead of a generic module. For all frameworks we use the builtin STFT transform operator that can work on the GPU (Cite paper from Choi NIPS).
-- __Essential augmentations__: data augmentation techniques for source separation are described in  [@uhlich17; something_from_icassp19] which we adopted here. They enable to attain good performance even though the audio datasets such as MUSDB18 are often of limited size.
+- __Datasets__: we support the _MUSDB18_ and the _MUSDB18HQ_ dataset, that is most established dataset that we released some years ago. Several other custom options are supported through native dataset and dataloader APIs. This encourages the interested researcher to train _Open-unmix_ model with her/his own data.
+- __Efficient dataloading and transforms__: since preparing the batches for training is often the efficiency bottleneck, extra-care was taken to optimize speed and performance. Here, we use framwork specific data loading API instead of a generic module. For all frameworks we use the builtin STFT transform operator, when available, that works on the GPU to improve performance (See [@choi17]).
+- __Essential augmentations__: data augmentation techniques for source separation are described in  [@uhlich17; something_from_icassp19] which we adopted here. They enable to attain good performance even though the audio datasets such as _MUSDB18_ are often of limited size.
 - __Post processing__: add details to norbert. <!-- TODO: Antoine -->
 
 ### Model
@@ -153,7 +153,7 @@ That said, the _Open-Unmix_ system can easily be extended to such generative tra
 The constitutive parts of the actual deep model used in _Open-Unmix_ only comprise very classical elements.
 Among them, we can mention:
 
-  - _LSTM_ [@Hochreiter97] <!-- TODO: Stefan -->
+  - _LSTM_: The core of _Open-Unmix_ is a three layer bidirectional LSTM network [@Hochreiter97]. Due to its recurrent nature, the model can be trained and evaluated on arbitrary length of audio signals. Since the model takes information from past and future simultaneously, the model cannot be used in an online/real-time manner. An uni-directional model can easily be trained.
   - _Fully connected time-distributed layers_ are used for dimension reduction and augmentation, at the input and output sides, respectively. They allow control over the number of parameters of the model and prove to be crucial for generalization.
   - _Skip connections_ are used in two ways: i/ the output to recurrent layers are augmented with their input, and this proved to help convergence. ii/ The output spectrogram is computed as an element-wise multiplication of the input. This means that the system actually has to learn _how much each TF bin does belong to the target source_ and not the _actual_ value of that bin. This is _critical_ for obtaining good performance and combining the estimates given for several targets, as done in _Open-unmix_.
   - _Non linearities_ are of three kinds: i/ rectified linear units (ReLU) allow intermediate layers to comprise nonnegative activations, which long proved effective in TF modelling. ii/ `tanh` are known to be necessary for a good training of LSTM model, notably because they avoid exploding input and output. iii/ a `sigmoid` activation is chosen before masking, to mimic the way legacy systems take the outputs as a _filtering_ of the input.
@@ -196,12 +196,29 @@ The research concerning the deep neural network architecture as well as the trai
 
 In the future, we hope the software will be well received by the community. As stated in our contributors agreement.
 
-## The source separation community
-
 - Open-unmix is part of a ecosystem of software, datasets and online resources: the `sigsep` community
 - we provide MUSDB18 and MUSDB18-HQ, the largest freely available dataset, this comes with a complete toolchain to easily parse and read the dataset such as [musdb] and [mus]
 - [museval], is mostly used evaluation package for source separation
 - we also are the organizers of the largest source separation evaluation campaign
 - in this campaign we noticed: previous state-of-the-art systems could not be matched by newer systems (e.g. UHL2)
+
+## Code Structure
+
+* `data.py` includes several torch datasets that can all be used to train _open-unmix_.
+* `train.py` includes all code that is necessary to start a training.
+* `model.py` includes the open-unmix torch modules.
+* `test.py` includes code to predict/unmix from audio files.
+* `eval.py` includes all code to run the objective evaluation using museval on the MUSDB18 dataset.
+* `utils.py` includes additional tools like audio loading and metadata loading.
+
+Users of _Open-Unmix_ that have their own datasets and could not fit one of our predefined datasets might want to implement or use their own `torch.utils.data.Dataset` to be used for the training. Such a modification is very simple since our dataset.
+
+We think that recurrent models provide the best trade-off between good results, fast training and flexibility of training due to its ability to learn from arbitrary durations of audio and different audio representations. If users want to try different models you can easily build upon our model template below.
+
+We designed _Open-Unmix_ so that the training of multiple targets is handled in separate models. We think that this has several benefits such as:
+
+* single source models can leverage unbalanced data where for each source different size of training data is available/
+* training can easily distributed by training multiple models on different nodes in parallel.
+* at test time the selection of different models can be adjusted for specific applications.
 
 # References
