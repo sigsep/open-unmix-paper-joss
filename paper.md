@@ -145,7 +145,7 @@ Fig. \ref{separation_network} gives the details about the used DNN model.
 ![General processing pipeline\label{processing_pipeline}](General_Processing_Pipeline.pdf)
 
 <!-- TODO: Stefan -->
-Add note about phase (we are only focusing on magnitudes for separation).
+<!-- Add note about phase (we are only focusing on magnitudes for separation). -->
 
 The system is trained to predict a separated source from the observation of its mixture with other sources. The corresponding training is done in a _discriminative_ way, i.e. through a dataset of mixtures paired with their true separated sources. These are used as ground truth targets from which gradients are computed. Although alternative ways to train a separation system have emerged recently, notably through _generative_ strategies trained through adversarial cost functions, they still did not lead to comparable performance.
 Even if we acknowledge that such an approach could in theory allow to scale the size of training data since it can be done in an _unpaired_ manner, we feel that this direction is still in progress and cannot be considered state-of-the-art today.
@@ -162,15 +162,19 @@ Among them, we can mention:
 
 ### Training
 
-Our experience gained during the research we did for releasing _Open-unmix_ taught us that successful __training__ of the model takes expert knowledge that we wanted to share with the community, since only an implementation can enable widespread diffusion of these techniques. Indeed, those tricks are often deemed of not sufficient scientific importance to be found in scientific papers.
+Our experience gained during the research we did for releasing _Open-Unmix_ taught us that successful __training__ of the model takes expert knowledge that we want to share with the community, since only an implementation can enable widespread diffusion of these techniques.
+Indeed, those tricks are often deemed of not sufficient scientific importance to be found in scientific papers.
 
+In particular, we use the following setup for training.
+During training, we learn the weights of the BLSTM by minimizing the mean squared error (MSE) with the ADAM optimizer [@kingma2014adam].
+Data augmenation is an important step due to the small size of MUSDB and, therefore, we use the data augmentation as described in [@uhlich17].
 <!-- - Cost functions (supervised/adversarial training, clustering-based) -->
 <!-- TODO: Stefan -->
-- Optimization algorithms, learnig rate, scheduling, early stopping, etc.
-- Data augmentations.
-- Model hyperparameters.
-- Temporal context, batch size, standardization/scaling, regularization
-
+<!-- - Optimization algorithms, learnig rate, scheduling, early stopping, etc.-->
+<!-- - Data augmentations.-->
+<!-- - Model hyperparameters.-->
+<!-- - Temporal context, batch size, standardization/scaling, regularization-->
+<!--
 ## Usage and Results
 
 ### Objective Evaluation
@@ -179,7 +183,8 @@ compare and list link to demo website
 
 ### For Artists
 
-torchub
+torchhub
+-->
 
 # Contributions
 
