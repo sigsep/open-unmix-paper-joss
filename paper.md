@@ -88,32 +88,44 @@ We therefore designed _Open-Unmix_ to address these issues by relying on procedu
 When we developed _Open-Unmix_, we had several design decisions to make. These were driven by both be ready for future research and to allow users to experience separation performance themselves.
 Many methods/researchers face difficulties in pre and post-processing. Since we are experienced researchers in this area we put our combined domain knowledge into _Open-Unmix_, its data loading and post-processing.
 Furthermore, ML researchers are not looking for a general framework on source separation but a SOTA method that is easy to extend.
-
 The aim was hence to design a system so that researchers can easily hack the code to implement:
 
-- new representations (needs tested model)
-- new architectures (needs tested pre-and postprocess)
+- new representations, in which case there is a need for established separation architectures to use as a basis for evaluation.
+- new architectures, which needs solid pre and post-processing pipelines.
+
+
+The design choices made for _Open-unmix_ have sought to reach two somewhat contradictory objectives. Its first aim is to have state-of-the art performance, and its second aim is to still be easily understandable, so that it could serve as a basis for research allowing improved performance in the future.
+
+In short, _Open-unmix_ inputs mixtures in the waveform domain, transforms them through a fixed time-frequency representation, before applying a series a nonlinear recurrent layers to predict the spectrogram of a target source. At the end of the chain, a postprocessing system gathers the estimates for all sources, and combines them through a multichannel Wiener filter to obtain the actual separated waveforms.
+
+The most critical aspects of the choices can be summarized by stating the system heavily relies on __expert-knowledge__: while end-to-end systems that directly produce estimates in the waveform (time) domain are a promising research direction, they do not lead to state-of-the-art performance in music separation. On the contrary, systems operating in the Time-Frequency (TF) domain are still observed to significantly outperform more "modern" solutions that would bypass the expert knowledge required by TF processing.
+
+From the perspective of _Open unmix_, signal processing fundamentals are encapsulated in _pre_ and _post-processing_ operations. _Preprocessing_: the computation of Short-Term Fourier Transforms (STFT). _Postprocessing_: the spectrogram of the estimates is obtained by multiplying element-wise the input spectrogram through a _mask_ whose values lie between 0 and 1. This comes from the knowledge that energies of the sources roughly _add up__ to the energy of the mixture. Then, multichannel Wiener filters exploit the spectrogram estimates to produce the actual waveforms of the estimates. STFT forward and inverse transformations are used as implemented in standard libraries. Wiener filtering is used as implemented in the `sigsep.norbert` [LINK] repository.
+
+
 
 ### Framework specific vs. framework agnostic
 
-_Open-unmix_ is developed in parallel for multiple frameworks to cover the most number of users. Currently we support tensorflow/keras, pytorch, nnabla.
-- The pytorch version will serve as the reference version due its simplicity and easiness to extend the code
-- the tensorflow version will be release later when TF 2.0 is stable.
-- version for nnabla will be close the pytorch code "example" and will be released together with the tensorflow version.
+_Open-unmix_ is developed in parallel for multiple frameworks to cover the most number of users. Currently we support tensorflow/keras, pytorch, nnabla, which together can be considered a sufficient coverage for our purpose. More specifically:
+- The pytorch version will serve as the reference version due its simplicity and modularity.
+- Likewise, the nnabla will be close the pytorch code "example" and will be released together with the tensorflow version.
+- The tensorflow version will be release later when TF 2.0 is stable and should be more production-oriented.
+
 
 ### Hackable, Fast and simple
 
-- simple to extend
-- not a package
-- hackable (MNIST like)
-- pytorch implementation inspired by the famous MNIST example.
-- Open-unmix can easily be extended to include different models. Currently implemented: baseline LSTM network
+Keeping in mind that the leaarning curve can be quite steep in taudio processing, we did our best for _Open-unmix_ to be:
+- __simple to extend__: the pre/post processing, data-loading, training and models part of the code are clearly isolated and easy to replace/update. In particular, an extra-effort was done on making it easy to replace the core deep model that is currently a baseline BLSTM.
+- __not a package__: keeping it easy to use and change the code made us design the software to be composed of largely independent and self-containing parts.
+- __hackable (MNIST like)__: due to our objective of making it easier for machine-learning experts to try out music separation, we did our best to stick to the philosophy of baseline implementations for this community. In particular, _Open-unmix_ mimicks
+the famous MNIST example.
 <!-- - Recent Research on End-To-End models are tempting, because they can get away with domain knowledge typical required produce good results -->
 
 ### Reproducible
 
-- reproducible code
-- includes unit tests and regression tests.
+Releasing _Open-unmix_ is first and foremost an attempt to provide a reliable implementation sticking to established programming practice. In particular:
+- reproducible code: everything is provided to exactly reproduce our experiments and display our results.
+- the release includes unit tests and regression tests that should be useful in case of extending.
 
 ## Technical Details
 
@@ -123,20 +135,19 @@ We will give now more technical details about _Open-Unmix_. Fig. \ref{block_diag
 
 ### Datasets and Dataloaders
 
-- Support MUSDB18 dataset
-- Several custom datasets supported through native dataset and dataloader apis Possible points of failure
-- efficient sampling
-- fast data loading (See)
-- essential augmentations [@uhlich17; something_from_icassp19]
-- However, none of the modern networks design produced state-of-the-art results (e.g. https://github.com/francesclluis/source-separation-wavenet based on [https://arxiv.org/abs/1810.12187])
+When designing a machine-learnig based method, our first step was to encapsulate cleanly the data-processing aspects.
+- __Data loading__: we support the MUSDB18 dataset, that is the established standard that we released some years ago. Several other custom options are supported through native dataset and dataloader apis, we enable the interested researcher to train _Open-unmix_ model with her/his own data.
+- __Efficient sampling__: since preparing the batches for training is often the efficiency bottleneck, extra-care was taken to optimize fast data-loading.
+- __Essential augmentations__: data augmentation as described in the literature [@uhlich17; something_from_icassp19] is implemented, since it makes it possible to attein good performance even though the audio datasets are often of limited size.
+<!-- - However, none of the modern networks design produced state-of-the-art results (e.g. https://github.com/francesclluis/source-separation-wavenet based on [https://arxiv.org/abs/1810.12187]) -->
 
-### Pre-processing
+<!-- ### Pre-processing
 
 - STFT on the fly
 
 ### Post-processing
 
-- norbert details
+- norbert details -->
 
 ### Model
 
@@ -147,16 +158,6 @@ Fig. \ref{separation_network} gives the details about the used DNN model.
 ![General processing pipeline\label{processing_pipeline}](General_Processing_Pipeline.pdf)
 
 Add note about phase (we are only focusing on magnitudes for separation).
-
-
-The design choices made for _Open-unmix_ have sought to reach two somewhat contradictory objectives. Its first aim is to have state-of-the art performance, and its second aim is to still be easily understandable, so that it could serve as a basis for research allowing improved performance in the future.
-
-In short, _Open-unmix_ inputs mixtures in the waveform domain, transforms them through a fixed time-frequency representation, before applying a series a nonlinear recurrent layers to predict the spectrogram of a target source. At the end of the chain, a postprocessing system gathers the estimates for all sources, and combines them through a multichannel Wiener filter to obtain the actual separated waveforms.
-
-The most critical aspects of the system are the following:
-* __Expert-knowledge__: while end-to-end systems that directly produce estimates in the waveform (time) domain are a promising research direction, they do not lead to state-of-the-art performance in music separation. On the contrary, systems operating in the Time-Frequency (TF) domain are still observed to significantly outperform more "modern" solutions that would bypass the expert knowledge required by TF processing.
-
-  From the perspective of _Open unmix_, signal processing fundamentals are encapsulated in _pre_ and _post-processing_ operations. _Preprocessing_: the computation of Short-Term Fourier Transforms (STFT). _Postprocessing_: the spectrogram of the estimates is obtained by multiplying element-wise the input spectrogram through a _mask_ whose values lie between 0 and 1. This comes from the knowledge that energies of the sources roughly _add up__ to the energy of the mixture. Then, multichannel Wiener filters exploit the spectrogram estimates to produce the actual waveforms of the estimates. STFT forward and inverse transformations are used as implemented in standard libraries. Wiener filtering is used as implemented in the `sigsep.norbert` [LINK] repository.
 
 * __Discriminative__: the system is trained to predict a separated source from the observation of its mixture with other sources. The corresponding training is done in a _discriminative_ way, i.e. through a dataset of mixtures paired with their true separated sources. These are used as ground truth targets from which gradients are computed.
 
@@ -171,10 +172,12 @@ The most critical aspects of the system are the following:
 
 ### Training
 
-- Cost functions (supervised/adversarial training, clustering-based)
-- Optimization algorithms
-- Data augmentations
-- temporal context, batch size, standardization/scaling, regularization
+Our experience gained during the research we did for releasing _Open-unmix_ taught us that good __training__ of the model takes expert knowledge that we wanted to share with the community, since only an implementation can enable widespread diffusion of these techniques. Indeed, those tricks are often deemed of not sufficient scientific importance to be found in scientific papers.   
+<!-- - Cost functions (supervised/adversarial training, clustering-based) -->
+- Optimization algorithms, learnig rate, scheduling, early stopping, etc.
+- Data augmentations.
+- Model hyperparameters.
+- Temporal context, batch size, standardization/scaling, regularization
 
 ## Results
 
