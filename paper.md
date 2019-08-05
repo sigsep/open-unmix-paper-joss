@@ -86,21 +86,24 @@ We therefore designed _Open-Unmix_ to address these issues by relying on procedu
 ## Design Choices
 
 The design choices made for _Open-unmix_ have sought to reach two somewhat contradictory objectives. Its first aim is to have state-of-the art performance, and its second aim is to still be easily understandable, so that it could serve as a basis for research allowing improved performance in the future. In the past, many researchers faced difficulties in pre- and post-processing that could be avoided by with sharing domain knowledge.
-The aim was hence to design a system so that allows researchers to focus on:
+The aim was hence to design a system that allows researchers to focus on:
 
 - new representations, in which case there is a need for established separation architectures to use as a basis for evaluation.
 - new architectures, which needs solid pre and post-processing pipelines.
 
-In short, _Open-unmix_ inputs mixtures in the waveform domain, transforms them using a time-frequency representation, before applying a series a non-linear model to predict the spectrogram of a target source. At the end of the chain, a postprocessing system gathers the estimates for all sources, and combines them through a multichannel Wiener filter to obtain the actual separated waveforms.
+In short, _Open-Unmix_ inputs mixtures in the waveform domain, transforms them using a time-frequency representation, before applying a series of non-linear layers to predict the spectrogram of a target source. At the end of the chain, a postprocessing system gathers the estimates for all sources, and combines them through a multichannel Wiener filter to obtain the actual separated waveforms.
 
-The most critical aspects of the choices can be summarized by stating the system heavily relies on __expert-knowledge__: while end-to-end systems that directly produce estimates in the waveform (time) domain are a promising research direction, they currently do not lead to state-of-the-art performance in music separation. On the contrary, systems operating in the Time-Frequency (TF) domain are still observed to significantly outperform more "modern" solutions that would bypass the expert knowledge required by TF processing.
+The most critical aspects of the choices can be summarized by stating that the system heavily relies on __expert-knowledge__: while end-to-end systems that directly produce estimates in the waveform (time) domain are a promising research direction, they currently do not lead to state-of-the-art performance in music separation.
+On the contrary, systems operating in the time-frequency (TF) domain are still observed to significantly outperform more "modern" solutions that would bypass the expert knowledge required by TF processing.
 
-From the perspective of _Open unmix_, signal processing fundamentals are encapsulated in _pre_ and _post-processing_ operations. _Preprocessing_: the computation of Short-Term Fourier Transforms (STFT). _Postprocessing_: the spectrogram of the estimates is obtained by multiplying element-wise the input spectrogram through a _mask_ whose values lie between 0 and 1. This comes from the knowledge that energies of the sources roughly _add up__ to the energy of the mixture. Then, multichannel Wiener filters exploit the spectrogram estimates to produce the actual waveforms of the estimates. STFT forward and inverse transformations are used as implemented in standard libraries. Wiener filtering is used as implemented in the [`sigsep.norbert`](https://github.com/sigsep/norbert) repository.
+From the perspective of _Open-Unmix_, signal processing fundamentals are encapsulated in _pre_ and _post-processing_ operations. _Preprocessing_: the computation of the short-term Fourier transforms (STFT). _Postprocessing_: the spectrogram of the estimates are obtained by multiplying element-wise the input spectrogram through a _mask_ whose values lie between 0 and 1. This comes from the knowledge that energies of the sources roughly _add up_ to the energy of the mixture. Then, multichannel Wiener filters exploit the spectrogram estimates to produce the actual waveforms of the estimates. STFT forward and inverse transformations are used as implemented in standard libraries.
+Wiener filtering is used as implemented in our [`sigsep.norbert`](https://github.com/sigsep/norbert) repository.
 
 ### Framework specific vs. framework agnostic
 
-_Open-unmix_ is developed in parallel for multiple frameworks to cover the most number of users. Currently we support tensorflow/keras, pytorch, nnabla, which together can be considered a sufficient coverage for our purpose. More specifically, the _pytorch_ version will serve as the reference version due its simplicity and modularity. Likewise, the nnabla is close the pytorch code.
-The tensorflow version will be release later when tensorflow 2.0 is stable and will be more production-oriented (inference).
+_Open-unmix_ is developed in parallel for multiple frameworks to cover the most number of users. Currently we support Tensorflow/Keras, PyTorch, NNabla, which together can be considered a sufficient coverage for our purpose. More specifically, the _PyTorch_ version will serve as the reference version due to its simplicity and modularity.
+Likewise, the NNabla is close to the PyTorch code.
+The tensorflow version will be release later when Tensorflow 2.0 is stable and will be more production-oriented (inference).
 
 ### Hackable, Fast and Simple
 
@@ -112,7 +115,7 @@ Keeping in mind that the leaarning curve can be quite steep in audio processing,
 
 ### Reproducible
 
-Releasing _Open-unmix_ is first and foremost an attempt to provide a reliable implementation sticking to established programming practice. In particular:
+Releasing _Open-Unmix_ is first and foremost an attempt to provide a reliable implementation sticking to established programming practice. In particular:
 
 - __reproducible code__: everything is provided to exactly reproduce our experiments and display our results.
 _ __pre-trained models__: we provide pre-trained weights that allow to use the model right away or fine-tune it on user-provided data.
@@ -144,14 +147,17 @@ Fig. \ref{separation_network} gives the details about the used DNN model.
 <!-- TODO: Stefan -->
 Add note about phase (we are only focusing on magnitudes for separation).
 
-The system is trained to predict a separated source from the observation of its mixture with other sources. The corresponding training is done in a _discriminative_ way, i.e. through a dataset of mixtures paired with their true separated sources. These are used as ground truth targets from which gradients are computed. Although alternative ways to train a separation system have emerged recently, notably through _generative_ strategies trained through adversarial cost functions, they did not lead to comparable performance still. Even if we acknowledge that such an approach could in theory allow to scale the size of training data since it can be done in an _unpaired_ manner, we feel that this direction is still in progress and cannot be considered state-of-the-art today. That said, the _Open-unmix_ system can easily be extended to such generative training, and the community is much welcome to exploit it for that purpose.
+The system is trained to predict a separated source from the observation of its mixture with other sources. The corresponding training is done in a _discriminative_ way, i.e. through a dataset of mixtures paired with their true separated sources. These are used as ground truth targets from which gradients are computed. Although alternative ways to train a separation system have emerged recently, notably through _generative_ strategies trained through adversarial cost functions, they still did not lead to comparable performance.
+Even if we acknowledge that such an approach could in theory allow to scale the size of training data since it can be done in an _unpaired_ manner, we feel that this direction is still in progress and cannot be considered state-of-the-art today.
+That said, the _Open-Unmix_ system can easily be extended to such generative training, and the community is much welcome to exploit it for that purpose.
 
-The constitutive parts of the actual deep model used in _Open-unmix_ only comprise very classical elements. Among them , we can mention:
+The constitutive parts of the actual deep model used in _Open-Unmix_ only comprise very classical elements.
+Among them, we can mention:
 
   - _LSTM_ [@Hochreiter97] <!-- TODO: Stefan -->
   - _Fully connected time-distributed layers_ are used for dimension reduction and augmentation, at the input and output sides, respectively. They allow control over the number of parameters of the model and prove to be crucial for generalization.
-  - _Skip connections_ are used in two ways: i/ the output to recurrent layers are augmented with their input, and this proved to help convergence. ii/ The output spectrogram is computed as an element-wise multiplication of the input. This means the system actually has to learn _how much each TF bin does belong to the target source_ and not the _actual_ value of that bin. This is _critical_ for obtaining good performance and combining the estimates given for several targets, as done in _Open-unmix_.
-  - _Non linearities_ are of three kinds: i/ Rectified Linear  (ReLUE) Units allow intermediate layers to comprise nonnegative activations, which long proved effective in TF modelling. ii/ `tanh` are known to be necessary for a good training of LSTM model, notably because they avoid exploding input and output. iii/ a `sigmoid` activation is chosen before masking, to mimic the way legacy systems take the outputs as a _filtering_ of the input.
+  - _Skip connections_ are used in two ways: i/ the output to recurrent layers are augmented with their input, and this proved to help convergence. ii/ The output spectrogram is computed as an element-wise multiplication of the input. This means that the system actually has to learn _how much each TF bin does belong to the target source_ and not the _actual_ value of that bin. This is _critical_ for obtaining good performance and combining the estimates given for several targets, as done in _Open-unmix_.
+  - _Non linearities_ are of three kinds: i/ rectified linear units (ReLU) allow intermediate layers to comprise nonnegative activations, which long proved effective in TF modelling. ii/ `tanh` are known to be necessary for a good training of LSTM model, notably because they avoid exploding input and output. iii/ a `sigmoid` activation is chosen before masking, to mimic the way legacy systems take the outputs as a _filtering_ of the input.
   - _Batch normalization_ long proved important for stable training, because it makes the different batches more similar in terms of distributions. In the case of audio where signal dynamics can be very important, this is crucial.
 
 ### Training
