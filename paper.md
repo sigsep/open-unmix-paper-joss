@@ -118,7 +118,7 @@ Keeping in mind that the leaarning curve can be quite steep in audio processing,
 Releasing _Open-Unmix_ is first and foremost an attempt to provide a reliable implementation sticking to established programming practice. In particular:
 
 - __reproducible code__: everything is provided to exactly reproduce our experiments and display our results.
-_ __pre-trained models__: we provide pre-trained weights that allow to use the model right away or fine-tune it on user-provided data.
+- __pre-trained models__: we provide pre-trained weights that allow to use the model right away or fine-tune it on user-provided data.
 - __tests__: the release includes unit tests and regression tests usefule to organize future open collaboration using pull-requests.
 
 ## Technical Details
@@ -133,7 +133,7 @@ When designing a machine-learnig based method, our first step was to encapsulate
 
 - __Datasets__: we support the [MUSDB18] dataset, that is most established dataset that we released some years ago. Several other custom options are supported through native dataset and dataloader APIs. This encourages the interested researcher to train _Open-unmix_ model with her/his own data.
 - __Efficient dataloading and transforms__: since preparing the batches for training is often the efficiency bottleneck, extra-care was taken to optimize speed and performance. Here, we use framwork specific data loading API instead of a generic module. For all frameworks we use the builtin STFT transform operator that can work on the GPU (Cite paper from Choi NIPS).
-- __Essential augmentations__: data augmentation techniques for source separation are described in  [@uhlich17; something_from_icassp19] which we adopted here. They enable to attein good performance even though the audio datasets such as MUSDB18 are often of limited size.
+- __Essential augmentations__: data augmentation techniques for source separation are described in  [@uhlich17; something_from_icassp19] which we adopted here. They enable to attain good performance even though the audio datasets such as MUSDB18 are often of limited size.
 - __Post processing__: add details to norbert. <!-- TODO: Antoine -->
 
 ### Model
