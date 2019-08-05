@@ -44,11 +44,10 @@ Furthermore, we designed _Open-Unmix_ to be one core component in an open ecosys
 
 # Background
 
-<!-- - Explain the story of music separation and how it got popular in research -->
 Music separation is a problem which fascinated researchers since over 50 years. This is partly due to the fact that, mathematically, there exist no closed-form solution when many sources (instruments) are captured by a single microphone.
 As the problem is difficult to solve on generic signals, researchers instead focused on using strong assumptions about the way the signals were recorded and mixed. A large number of these methods are centered around "classical" signal processing methods, for a more detailed overview see [@rafii17] and [@cano19].
 <!-- - Explain how and when deep neural network based music separation outperformed existing methods. -->
-Many of these classical signal processing based methods were hand-crafted and tuned to a small number of music recordings [@sisec10, @sisec11, @sisec13].
+Many of these classical signal processing based methods were hand-crafted and tuned to a small number of music recordings [@sisec10; @sisec11; @sisec13].
 Systematic objective evaluation of these methods, however, was hardly feasible as freely available dataset did not exist at that time.
 In fact, for a meaningful evaluation, the ground truth separated stems are necessary, however, these are considered precious artifacts of the music mixing and mastering and, therefore, are usually not available for sale.
 Furthermore, any commercial music is well known to be subject to copyright protection laws and, hence, generally not available for re-distribution.
@@ -58,14 +57,14 @@ This lead to a large performance boost similar to other audio tasks such as auto
 In fact, in 2016 the speech recognition community had access to datasets with more than 10.000 hours of speech [@amodei16].
 At the same time, the _MUSDB_ dataset was released [@rafii17] which comprises 150 full length music tracks – a total of just 10 hours of music.
 Up to date, this is still the largest freely available dataset for source separation.
-Nonetheless, even with this small amount of data, deep neural networks (DNNs) were not only successfully used for music separation but they are now setting the state-of-the art in this domain as can be seen by the results of the community-based signal separation evaluation campaign(SiSEC) [@sisec15, @sisec16, @sisec18].
+Nonetheless, even with this small amount of data, deep neural networks (DNNs) were not only successfully used for music separation but they are now setting the state-of-the art in this domain as can be seen by the results of the community-based signal separation evaluation campaign(SiSEC) [@sisec15; @sisec16; @sisec18].
 
 In these challenges, the proposed systems are compared to other methods as well as a number of oracle methods [cite_oracles] to indicate possible upper bounds. On the other end, some of the classical signal processing based methods, known to be _reliable_, _fast_, _simple to use_, were treated as reference algorithms.
 In fact, in the past, a number of systems and libraries were explicitly being designed with these aspects in mind.
 While today there exist also a number of commercial systems such as _Audionamix XTRAX STEMS_, _IZOTOPE RX 7_ or _AudioSourceRE_ which target end-users, we considered only tools that are available as open source software, suitable for research.
 
 <!-- list of methods -->
-The first publicly available software for source separation was presented _openBlissart_ in 2011 [@weninger11]. It is based on C++ and represents the class of systems that are based on non-negative matrix factorization (NMF). In 2012, the _Flexible Audio Source Separation Toolbox (FASST)_ was presented in [@ozerov2011general, @salaun14]. It was written in MATLAB and C++. It was also based on NMF methods but additionally also includes other model based methods.
+The first publicly available software for source separation was presented _openBlissart_ in 2011 [@weninger11]. It is based on C++ and represents the class of systems that are based on non-negative matrix factorization (NMF). In 2012, the _Flexible Audio Source Separation Toolbox (FASST)_ was presented in [@ozerov2011general; @salaun14]. It was written in MATLAB and C++. It was also based on NMF methods but additionally also includes other model based methods.
 In 2016, the _untwist_ libraries was proposed in [@roma16]. It comprises a number of methods, ranging from classical signal processing based methods to also feed forward neural networks. The library is written in Python 2.7. Unfortunately, it was not updated since 2 years and many methods are not tested well.
 _Nussl_ is a very recent framework, presented in [@manilow18]. It includes a large number of methods and generally focuses on classical signal processing methods instead of machine learning. It has built-in interfaces for common evaluation metrics, data sets. The library offers great modularity and a good level of abstraction, however, it also means that it is challenging for beginners who might only want to focus on machine learning based techniques.
 
@@ -80,7 +79,7 @@ Also, the lack of a common community accepted reference method potentially  miss
 Today, many new research in signal processing comes from applying machine learning to specific tasks such as music separation.
 With the rise of simple to use machine learning frameworks such as [Keras], [Tensorflow], [Pytorch] or [NNabla], the technical debt of developing a music separation system appears to be very low at first sight.
 However, the lack of domain knowledge about the specifics of music signals results weak performance that, additionally, is difficult to track using learning based algorithms.
-We could observe this problem in [@sisec16, @sisec18], when we organized the source separation evaluation campaign where complex deep models might underperform simpler models just because of subtle differences in pre- and postprocessing. These problems could obviously have been discussed in a more systematic manner if the proposed methods would have been open-source.
+We could observe this problem in [@sisec16; @sisec18], when we organized the source separation evaluation campaign where complex deep models might underperform simpler models just because of subtle differences in pre- and postprocessing. These problems could obviously have been discussed in a more systematic manner if the proposed methods would have been open-source.
 We therefore designed _open-unmix_ to address these issues by relying on procedures that were verified by the community or proven to be working well in literature.
 
 ## Design Choices
@@ -123,7 +122,7 @@ _Open-unmix_ is developed in parallel for multiple frameworks to cover the most 
 - Several custom datasets supported through native dataset and dataloader apis Possible points of failure
 - efficient sampling
 - fast data loading (See)
-- essential augmentations [@uhlich17, something_from_icassp19]
+- essential augmentations [@uhlich17; something_from_icassp19]
 - However, none of the modern networks design produced state-of-the-art results (e.g. https://github.com/francesclluis/source-separation-wavenet based on [https://arxiv.org/abs/1810.12187])
 
 ### Pre-processing
@@ -143,15 +142,16 @@ _Open-unmix_ is developed in parallel for multiple frameworks to cover the most 
 
 We will now give more technical details about UMX. Fig. \ref{} shows the basic approach. During training, we learn a DNN which can be later used for separating songs.
 
-[@uhlich15, @nugraha16, @uhlich17]
+[@uhlich15; @nugraha16; @uhlich17]
 
 ![Block diagram of UMX](UMX_BlockDiagram.pdf)
 
 ![General processing pipeline](General_Processing_Pipeline.pdf)
 
+Add note about phase (we are only focusing on magnitudes for separation).
 
 
-[INSERT THE FIGURE FOR THE UMX MODEL HERE]
+
 The design choices made for _Open-unmix_ have sought to reach two somewhat contradictory objectives. Its first aim is to have state-of-the art performance, and its second aim is to still be easily understandable, so that it could serve as a basis for research allowing improved performance in the future.
 
 In short, _Open-unmix_ inputs mixtures in the waveform domain, transforms them through a fixed time-frequency representation, before applying a series a nonlinear recurrent layers to predict the spectrogram of a target source. At the end of the chain, a postprocessing system gathers the estimates for all sources, and combines them through a multichannel Wiener filter to obtain the actual separated waveforms.
