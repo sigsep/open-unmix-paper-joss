@@ -153,11 +153,11 @@ That said, the _Open-Unmix_ system can easily be extended to such generative tra
 The constitutive parts of the actual deep model used in _Open-Unmix_ only comprise very classical elements.
 Among them, we can mention:
 
-  - _LSTM_: The core of _Open-Unmix_ is a three layer bidirectional LSTM network [@Hochreiter97]. Due to its recurrent nature, the model can be trained and evaluated on arbitrary length of audio signals. Since the model takes information from past and future simultaneously, the model cannot be used in an online/real-time manner. An uni-directional model can easily be trained.
-  - _Fully connected time-distributed layers_ are used for dimension reduction and augmentation, at the input and output sides, respectively. They allow control over the number of parameters of the model and prove to be crucial for generalization.
-  - _Skip connections_ are used in two ways: i/ the output to recurrent layers are augmented with their input, and this proved to help convergence. ii/ The output spectrogram is computed as an element-wise multiplication of the input. This means that the system actually has to learn _how much each TF bin does belong to the target source_ and not the _actual_ value of that bin. This is _critical_ for obtaining good performance and combining the estimates given for several targets, as done in _Open-unmix_.
-  - _Non linearities_ are of three kinds: i/ rectified linear units (ReLU) allow intermediate layers to comprise nonnegative activations, which long proved effective in TF modelling. ii/ `tanh` are known to be necessary for a good training of LSTM model, notably because they avoid exploding input and output. iii/ a `sigmoid` activation is chosen before masking, to mimic the way legacy systems take the outputs as a _filtering_ of the input.
-  - _Batch normalization_ long proved important for stable training, because it makes the different batches more similar in terms of distributions. In the case of audio where signal dynamics can be very important, this is crucial.
+- _LSTM_: The core of _Open-Unmix_ is a three layer bidirectional LSTM network [@Hochreiter97]. Due to its recurrent nature, the model can be trained and evaluated on arbitrary length of audio signals. Since the model takes information from past and future simultaneously, the model cannot be used in an online/real-time manner. An uni-directional model can easily be trained.
+- _Fully connected time-distributed layers_ are used for dimension reduction and augmentation, at the input and output sides, respectively. They allow control over the number of parameters of the model and prove to be crucial for generalization.
+- _Skip connections_ are used in two ways: i/ the output to recurrent layers are augmented with their input, and this proved to help convergence. ii/ The output spectrogram is computed as an element-wise multiplication of the input. This means that the system actually has to learn _how much each TF bin does belong to the target source_ and not the _actual_ value of that bin. This is _critical_ for obtaining good performance and combining the estimates given for several targets, as done in _Open-unmix_.
+- _Non linearities_ are of three kinds: i/ rectified linear units (ReLU) allow intermediate layers to comprise nonnegative activations, which long proved effective in TF modelling. ii/ `tanh` are known to be necessary for a good training of LSTM model, notably because they avoid exploding input and output. iii/ a `sigmoid` activation is chosen before masking, to mimic the way legacy systems take the outputs as a _filtering_ of the input.
+- _Batch normalization_ long proved important for stable training, because it makes the different batches more similar in terms of distributions. In the case of audio where signal dynamics can be very important, this is crucial.
 
 ### Training
 
@@ -181,7 +181,18 @@ As shown in Fig. \ref{separation_network}, the model uses an input scaler and ou
 For the input scaler, we initialize the offset and scale by the mean and standard deviation of the mixture magnitudes, which are computed from the training dataset.
 For the output scaler, we initialize the offset and scale to 1.0, i.e., the network is initialized such that it starts from a mask with all-ones, i.e., it uses the mixture signal as first estimate.
 
-## Usage and Results
+## Results
+
+![Boxplots of evaluation results of the `UMX` model compared with other methods from [@sisec18] (methods that did not only use MUSDB18 for training were ommitted)\label{boxplot}](boxplot.pdf)
+
+|target|SDR  |SIR  | SAR | ISR | SDR | SIR | SAR | ISR |
+|------|-----|-----|-----|-----|-----|-----|-----|-----|
+|`model`|UMX  |UMX  |UMX  |UMX |UMXHQ|UMXHQ|UMXHQ|UMXHQ|
+|vocals|6.32 |13.33| 6.52|11.93| 6.25|12.95| 6.50|12.70|
+|bass  |5.23 |10.93| 6.34| 9.23| 5.07|10.35| 6.02| 9.71|
+|drums |5.73 |11.12| 6.02|10.51| 6.04|11.65| 5.93|11.17|
+|other |4.02 |6.59 | 4.74| 9.31| 4.28| 7.10| 4.62| 8.78|
+>>>>>>> 8a72c384f4f2a7b8c76725591278724bec9a4847
 
 ### Objective Evaluation
 
@@ -190,7 +201,7 @@ compare and list link to demo website
 ### For Artists
 
 torchhub
--->
+
 
 # Contributions
 
@@ -201,22 +212,11 @@ The research concerning the deep neural network architecture as well as the trai
 
 ## Community
 
-In the future, we hope the software will be well received by the community. As stated in our contributors agreement.
-
-- Open-unmix is part of a ecosystem of software, datasets and online resources: the `sigsep` community
+In the future, we hope the software will be well received by the community. _Open-Unmix_ is part of a ecosystem of software, datasets and online resources: the `sigsep` community
 - we provide MUSDB18 and MUSDB18-HQ, the largest freely available dataset, this comes with a complete toolchain to easily parse and read the dataset such as [musdb] and [mus]
 - [museval], is mostly used evaluation package for source separation
 - we also are the organizers of the largest source separation evaluation campaign
 - in this campaign we noticed: previous state-of-the-art systems could not be matched by newer systems (e.g. UHL2)
-
-## Code Structure
-
-* `data.py` includes several torch datasets that can all be used to train _open-unmix_.
-* `train.py` includes all code that is necessary to start a training.
-* `model.py` includes the open-unmix torch modules.
-* `test.py` includes code to predict/unmix from audio files.
-* `eval.py` includes all code to run the objective evaluation using museval on the MUSDB18 dataset.
-* `utils.py` includes additional tools like audio loading and metadata loading.
 
 Users of _Open-Unmix_ that have their own datasets and could not fit one of our predefined datasets might want to implement or use their own `torch.utils.data.Dataset` to be used for the training. Such a modification is very simple since our dataset.
 
