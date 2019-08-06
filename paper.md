@@ -130,9 +130,9 @@ We will now give more technical details about _Open-Unmix_. Fig. \ref{block_diag
 
 When designing a machine-learnig based method, our first step was to encapsulate cleanly the data-processing aspects.
 
-- __Datasets__: we support the _MUSDB18_ and the _MUSDB18HQ_ dataset, that is most established dataset that we released some years ago. Several other custom options are supported through native dataset and dataloader APIs. This encourages the interested researcher to train _Open-unmix_ model with her/his own data.
+- __Datasets__: we support the _MUSDB18_ which is the most established dataset for music separation which we released some years ago [@rafii17]. The dataset contains 150 full lengths music tracks (~10h duration) of different musical styles along with their isolated `drums`, `bass`, `vocals` and `others` stems. _MUSDB18_ is split into _training_ (100 songs) and _test_  subsets (50 songs). All files from the _MUSDB18_ dataset are encoded in the Native Instruments stems format (.mp4) to reduce the file size. It is a multitrack format composed of 5 stereo streams, each one encoded in AAC @256kbps. Since AAC is bandwidth limited to 16 kHz instead of 22 kHz for full bandwidth, any model trained on _MUSDB18_ would not be able to output high quality content. As part of the release of _Open-Unmix_, we also released _MUSDB18-HQ_ [@musdb18hq], which is the uncompressed, full quality version of the _MUSDB18_ dataset.
 - __Efficient dataloading and transforms__: since preparing the batches for training is often the efficiency bottleneck, extra-care was taken to optimize speed and performance. Here, we use framwork specific data loading API instead of a generic module. For all frameworks we use the builtin STFT transform operator, when available, that works on the GPU to improve performance (See [@choi17]).
-- __Essential augmentations__: data augmentation techniques for source separation are described in  [@uhlich17; something_from_icassp19] which we adopted here. They enable to attain good performance even though the audio datasets such as _MUSDB18_ are often of limited size.
+- __Essential augmentations__: data augmentation techniques for source separation are described in  [@uhlich17] which we adopted here. They enable to attain good performance even though the audio datasets such as _MUSDB18_ are often of limited size.
 - __Post processing__: add details to norbert. <!-- TODO: Antoine -->
 
 ### Model
@@ -183,10 +183,7 @@ For the output scaler, we initialize the offset and scale to 1.0, i.e., the netw
 
 ## Results
 
-We will now give results for __Open-Unmix__.
-We trained it on the original versions of MUSDB but also on MUSDB-HQ which consists of the same songs but in uncompressed format.
-
-![Boxplots of evaluation results of the `UMX` model compared with other methods from [@sisec18] (methods that did not only use MUSDB18 for training were ommitted)\label{boxplot}](boxplot.pdf)
+We will  give the results of __Open-Unmix__ 
 
 |target|SDR  |SIR  | SAR | ISR | SDR | SIR | SAR | ISR |
 |------|-----|-----|-----|-----|-----|-----|-----|-----|
@@ -196,6 +193,9 @@ We trained it on the original versions of MUSDB but also on MUSDB-HQ which consi
 |drums |5.73 |11.12| 6.02|10.51| 6.04|11.65| 5.93|11.17|
 |other |4.02 |6.59 | 4.74| 9.31| 4.28| 7.10| 4.62| 8.78|
 
+We trained it on the original versions of MUSDB but also on MUSDB-HQ which consists of the same songs but in uncompressed format.
+
+![Boxplots of evaluation results of the `UMX` model compared with other methods from [@sisec18] (methods that did not only use MUSDB18 for training were ommitted)\label{boxplot}](boxplot.pdf)
 
 ### Objective Evaluation
 
@@ -216,19 +216,28 @@ The research concerning the deep neural network architecture as well as the trai
 ## Community
 
 In the future, we hope the software will be well received by the community. _Open-Unmix_ is part of a ecosystem of software, datasets and online resources: the `sigsep` community
+
 - we provide MUSDB18 and MUSDB18-HQ, the largest freely available dataset, this comes with a complete toolchain to easily parse and read the dataset such as [musdb] and [mus]
 - [museval], is mostly used evaluation package for source separation
 - we also are the organizers of the largest source separation evaluation campaign
 - in this campaign we noticed: previous state-of-the-art systems could not be matched by newer systems (e.g. UHL2)
 
-Users of _Open-Unmix_ that have their own datasets and could not fit one of our predefined datasets might want to implement or use their own `torch.utils.data.Dataset` to be used for the training. Such a modification is very simple since our dataset.
+Several other custom options are supported through native dataset and dataloader APIs. This encourages the interested researcher to train _Open-unmix_ model with her/his own data. We therefore provide datasets that can easiliy parse random file based data.
+Users of _Open-Unmix_ that have their own datasets and could not fit one of our predefined datasets might want to implement or use their own `torch.utils.data.Dataset` to be used for the training. Such a modification is very simple since our dataset. 
 
 We think that recurrent models provide the best trade-off between good results, fast training and flexibility of training due to its ability to learn from arbitrary durations of audio and different audio representations. If users want to try different models you can easily build upon our model template below.
 
 We designed _Open-Unmix_ so that the training of multiple targets is handled in separate models. We think that this has several benefits such as:
 
-* single source models can leverage unbalanced data where for each source different size of training data is available/
-* training can easily distributed by training multiple models on different nodes in parallel.
-* at test time the selection of different models can be adjusted for specific applications.
+- single source models can leverage unbalanced data where for each source different size of training data is available/
+- training can easily distributed by training multiple models on different nodes in parallel.
+- at test time the selection of different models can be adjusted for specific applications.
+
+### Sigsep ecosystem
+
+- Datasets: MUSDB18 [@rafii17], MUSDB18HQ [@musdb18hq].
+- Parsers: musdb python parser [@musdb].
+- Evaluation: museval [@museval] evaluation framework.
+- Post-Processing: multi-channel wiener filter implementation [@norbert].
 
 # References
