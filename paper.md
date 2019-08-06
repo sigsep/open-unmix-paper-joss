@@ -161,19 +161,26 @@ Among them, we can mention:
 
 ### Training
 
-Our experience gained during the research we did for releasing _Open-Unmix_ taught us that successful __training__ of the model takes expert knowledge that we want to share with the community, since only an implementation can enable widespread diffusion of these techniques.
+Our experience gained during the research we did for releasing _Open-Unmix_ taught us that successful __training__ of the model requires expert knowledge that we want to share with the community, since only an implementation can enable widespread diffusion of these techniques.
 Indeed, those tricks are often deemed of not sufficient scientific importance to be found in scientific papers.
 
-In particular, we use the following setup for training.
-During training, we learn the weights of the BLSTM by minimizing the mean squared error (MSE) with the ADAM optimizer [@kingma2014adam].
-Data augmenation is an important step due to the small size of MUSDB and, therefore, we use the data augmentation as described in [@uhlich17].
-<!-- - Cost functions (supervised/adversarial training, clustering-based) -->
-<!-- TODO: Stefan -->
-<!-- - Optimization algorithms, learnig rate, scheduling, early stopping, etc.-->
-<!-- - Data augmentations.-->
-<!-- - Model hyperparameters.-->
-<!-- - Temporal context, batch size, standardization/scaling, regularization-->
-<!--
+In particular, we use the following setup for training: We learn the weights of the BLSTM by minimizing the mean squared error (MSE) with the ADAM optimizer [@kingma2014adam].
+We start with an initial learning rate of 0.001 which is sequentially reduced by a factor of 0.3 if the validation error plateaus. Besides saving the current model, we also save the best model on the validation dataset, i.e., perform early stopping. The validation set consists of 14 songs, which we selected from the 100 training songs.
+
+Furthermore, heavy data augmenation is used due to the small size of MUSDB.
+We use the data augmentation as described in [@uhlich17]:
+
+- random swapping left/right channel for each instrument,
+- random scaling with uniform amplitudes from [0.25,1.25],
+- random chunking into sequences for each instrument, and,
+- random mixing of instruments from different songs.
+
+For training of the recurrent layers, we use sequences with 512 frames length, which corresponds to roughly 12 seconds and use 16 samples per minibatch.
+
+As shown in Fig. \ref{separation_network}, the model uses an input scaler and output scaler, which both subtract an offset and multiply with a scale for each frequency bin.
+For the input scaler, we initialize the offset and scale by the mean and standard deviation of the mixture magnitudes, which are computed from the training dataset.
+For the output scaler, we initialize the offset and scale to 1.0, i.e., the network is initialized such that it starts from a mask with all-ones, i.e., it uses the mixture signal as first estimate.
+
 ## Usage and Results
 
 ### Objective Evaluation
