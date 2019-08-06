@@ -175,7 +175,7 @@ We use the data augmentation as described in [@uhlich17]:
 - random chunking into sequences for each instrument, and,
 - random mixing of instruments from different songs.
 
-For training of the recurrent layers, we use sequences with 512 frames length, which corresponds to roughly 12 seconds and use 16 samples per minibatch.
+For training of the recurrent layers, we use sequences that corrensponds to six seconds duration and use 16 samples per minibatch.
 
 As shown in Fig. \ref{separation_network}, the model uses an input scaler and output scaler, which both subtract an offset and multiply with a scale for each frequency bin.
 For the input scaler, we initialize the offset and scale by the mean and standard deviation of the mixture magnitudes, which are computed from the training dataset.
