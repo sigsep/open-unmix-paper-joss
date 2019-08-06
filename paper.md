@@ -183,6 +183,9 @@ For the output scaler, we initialize the offset and scale to 1.0, i.e., the netw
 
 ## Results
 
+We will now give results for __Open-Unmix__.
+We trained it on the original versions of MUSDB but also on MUSDB-HQ which consists of the same songs but in uncompressed format.
+
 ![Boxplots of evaluation results of the `UMX` model compared with other methods from [@sisec18] (methods that did not only use MUSDB18 for training were ommitted)\label{boxplot}](boxplot.pdf)
 
 |target|SDR  |SIR  | SAR | ISR | SDR | SIR | SAR | ISR |
@@ -192,7 +195,7 @@ For the output scaler, we initialize the offset and scale to 1.0, i.e., the netw
 |bass  |5.23 |10.93| 6.34| 9.23| 5.07|10.35| 6.02| 9.71|
 |drums |5.73 |11.12| 6.02|10.51| 6.04|11.65| 5.93|11.17|
 |other |4.02 |6.59 | 4.74| 9.31| 4.28| 7.10| 4.62| 8.78|
->>>>>>> 8a72c384f4f2a7b8c76725591278724bec9a4847
+
 
 ### Objective Evaluation
 
