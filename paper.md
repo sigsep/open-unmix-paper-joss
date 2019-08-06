@@ -137,10 +137,6 @@ When designing a machine-learnig based method, our first step was to encapsulate
 
 ### Model
 
-![Separation network\label{separation_network}](https://docs.google.com/drawings/d/e/2PACX-1vTPoQiPwmdfET4pZhue1RvG7oEUJz7eUeQvCu6vzYeKRwHl6by4RRTnphImSKM0k5KXw9rZ1iIFnpGW/pub?w=959&h=308)
-
-Fig. \ref{separation_network} gives the details about the used DNN model.
-
 ![General processing pipeline\label{processing_pipeline}](General_Processing_Pipeline.pdf)
 
 <!-- TODO: Stefan -->
@@ -150,11 +146,12 @@ The system is trained to predict a separated source from the observation of its 
 Even if we acknowledge that such an approach could in theory allow to scale the size of training data since it can be done in an _unpaired_ manner, we feel that this direction is still in progress and cannot be considered state-of-the-art today.
 That said, the _Open-Unmix_ system can easily be extended to such generative training, and the community is much welcome to exploit it for that purpose.
 
-The constitutive parts of the actual deep model used in _Open-Unmix_ only comprise very classical elements.
-Among them, we can mention:
+The constitutive parts of the actual deep model used in _Open-Unmix_ only comprise very classical elements, depicted in Figure. \ref{separation_network}. Note that the model can process and predict multichannel spectrograms by stacking the features.
+
+![Separation network\label{separation_network}](https://docs.google.com/drawings/d/e/2PACX-1vTPoQiPwmdfET4pZhue1RvG7oEUJz7eUeQvCu6vzYeKRwHl6by4RRTnphImSKM0k5KXw9rZ1iIFnpGW/pub?w=959&h=308)
 
 - _LSTM_: The core of _Open-Unmix_ is a three layer bidirectional LSTM network [@Hochreiter97]. Due to its recurrent nature, the model can be trained and evaluated on arbitrary length of audio signals. Since the model takes information from past and future simultaneously, the model cannot be used in an online/real-time manner. An uni-directional model can easily be trained.
-- _Fully connected time-distributed layers_ are used for dimension reduction and augmentation, at the input and output sides, respectively. They allow control over the number of parameters of the model and prove to be crucial for generalization.
+- _Fully connected time-distributed layers_ are used for dimensionality reduction and augmentation, thus encoding/decoding the input and output. They allow control over the number of parameters of the model and prove to be crucial for generalization.
 - _Skip connections_ are used in two ways: i/ the output to recurrent layers are augmented with their input, and this proved to help convergence. ii/ The output spectrogram is computed as an element-wise multiplication of the input. This means that the system actually has to learn _how much each TF bin does belong to the target source_ and not the _actual_ value of that bin. This is _critical_ for obtaining good performance and combining the estimates given for several targets, as done in _Open-unmix_.
 - _Non linearities_ are of three kinds: i/ rectified linear units (ReLU) allow intermediate layers to comprise nonnegative activations, which long proved effective in TF modelling. ii/ `tanh` are known to be necessary for a good training of LSTM model, notably because they avoid exploding input and output. iii/ a `sigmoid` activation is chosen before masking, to mimic the way legacy systems take the outputs as a _filtering_ of the input.
 - _Batch normalization_ long proved important for stable training, because it makes the different batches more similar in terms of distributions. In the case of audio where signal dynamics can be very important, this is crucial.
@@ -165,7 +162,7 @@ Our experience gained during the research we did for releasing _Open-Unmix_ taug
 Indeed, those tricks are often deemed of not sufficient scientific importance to be found in scientific papers.
 
 In particular, we use the following setup for training: We learn the weights of the BLSTM by minimizing the mean squared error (MSE) with the ADAM optimizer [@kingma2014adam].
-We start with an initial learning rate of 0.001 which is sequentially reduced by a factor of 0.3 if the validation error plateaus. Besides saving the current model, we also save the best model on the validation dataset, i.e., perform early stopping. The validation set consists of 14 songs, which we selected from the 100 training songs.
+We start with an initial learning rate of 0.001 which is sequentially reduced by a factor of 0.3 if the validation error plateaus. Besides saving the current model, we also save the best model on the validation dataset, i.e., perform early stopping. The validation set consists of 14 songs, which we selected from the 100 training songs. For the purpose of reproducibility, the validation split is part of the [@musdb] tools.
 
 Furthermore, heavy data augmenation is used due to the small size of MUSDB.
 We use the data augmentation as described in [@uhlich17]:
@@ -183,7 +180,9 @@ For the output scaler, we initialize the offset and scale to 1.0, i.e., the netw
 
 ## Results
 
-We will  give the results of __Open-Unmix__ 
+The final models were trained using the pytorch version of _Open-Unmix_ on the original versions of _MUSDB18_ but also on _MUSDB-HQ_ as mentioned earlier. Both models were evaluated using museval [@museval] on the test set of  _MUSDB18_. The result scores are listed in the following table. It is important to note that these scores are aggregated using median over the metric frames and median over the tracks. The scores in native museval JSON format as well as the pre-trained weights are released on the on zenodo [link_to_zenodo]. Furthermore, we adopted [torch.hub](https://pytorch.org/hub), a system that automatically downloads pre-trained weights thus makes it very easy to use the model out of the box from python.
+
+Conerning the performance, it is interesting to note that _UMXHQ_ performs very similar to _UMX_, thus we made _UMXHQ_ the default model for inference and suggest that _UMX_ should only be used when compared against other participants from SiSEC 2018. The models are full stereo for input and output. A detailed list of all the parameters that were used to train the model are part of the model repository on zenodo. They also include the exact git commit that was used to train the model. [link_to_zenodo].
 
 |target|SDR  |SIR  | SAR | ISR | SDR | SIR | SAR | ISR |
 |------|-----|-----|-----|-----|-----|-----|-----|-----|
@@ -193,51 +192,31 @@ We will  give the results of __Open-Unmix__
 |drums |5.73 |11.12| 6.02|10.51| 6.04|11.65| 5.93|11.17|
 |other |4.02 |6.59 | 4.74| 9.31| 4.28| 7.10| 4.62| 8.78|
 
-We trained it on the original versions of MUSDB but also on MUSDB-HQ which consists of the same songs but in uncompressed format.
+### Objective Evaluation
 
 ![Boxplots of evaluation results of the `UMX` model compared with other methods from [@sisec18] (methods that did not only use MUSDB18 for training were ommitted)\label{boxplot}](boxplot.pdf)
 
-### Objective Evaluation
+We compared _Open-Unmix_ to other separation models as submitted in the last SiSEC [@sisec18]. The results of the `UMX` are depicted in \ref{boxplot}. It can be seen that we our proposed model reaches state-of-the-art results. In fact there is no statistical significant different between the best method `TAK1` and `UMX`. Considering the fact that `TAK1` is not released as open source, this indicates that _Open-Unmix_ is the current state-of-the-art open source source separation systems.
 
-compare and list link to demo website
-
-### For Artists
-
-torchhub
-
-
-# Contributions
-
-## Development
+# Community
 
 Open-Unmix was developed by Fabian-Robert Stöter and Antoine Liutkus at Inria Montpellier.
 The research concerning the deep neural network architecture as well as the training process was done in close collaboration with Stefan Uhlich and Yuki Mitsufuji from Sony Corporation.
 
-## Community
+In the future, we hope the software will be well received by the community. _Open-Unmix_ is part of a ecosystem of software, datasets and online resources: the `sigsep` community.
 
-In the future, we hope the software will be well received by the community. _Open-Unmix_ is part of a ecosystem of software, datasets and online resources: the `sigsep` community
+First, we provide MUSDB18 [@rafii17] and MUSDB18-HQ [@musdb18hq] which are the largest freely available dataset, this comes with a complete toolchain to easily parse and read the dataset [@musdb].
+We maintain _museval_, the most used evaluation package for source separation [@museval].
+We also are the organizers of the largest source separation evaluation campaign such as  [@sisec18]. And, we implemented a reference implementation of multi-channel wiener filter implementation released in [@norbert]. The `sigsep` community is organized and presented on its [own website](https://sigsep.github.com). _Open-Unmix_ itself is hosted on [https://open.unmix.app](https://open.unmix.app), which links to the framework implementations and provide all further information such as audio demos. 
 
-- we provide MUSDB18 and MUSDB18-HQ, the largest freely available dataset, this comes with a complete toolchain to easily parse and read the dataset such as [musdb] and [mus]
-- [museval], is mostly used evaluation package for source separation
-- we also are the organizers of the largest source separation evaluation campaign
-- in this campaign we noticed: previous state-of-the-art systems could not be matched by newer systems (e.g. UHL2)
+## Outlook
 
-Several other custom options are supported through native dataset and dataloader APIs. This encourages the interested researcher to train _Open-unmix_ model with her/his own data. We therefore provide datasets that can easiliy parse random file based data.
-Users of _Open-Unmix_ that have their own datasets and could not fit one of our predefined datasets might want to implement or use their own `torch.utils.data.Dataset` to be used for the training. Such a modification is very simple since our dataset. 
+In the future we hope that many researchers and users will use the software. _Open-Unmix_ is a community focused project, we therefore encourage the community to submit bug-fixes and comments and improve the computational performance. However, we are not looking for changes that only focused on improving the separation performance as this would be out of scope for a baseline implementation. Instead, we expect many researchers will fork the software as a basis for their own research. We prepared several several custom options to easily extend the code:
 
-We think that recurrent models provide the best trade-off between good results, fast training and flexibility of training due to its ability to learn from arbitrary durations of audio and different audio representations. If users want to try different models you can easily build upon our model template below.
+1. _native dataset and dataloader APIs_: This encourages the interested researcher to train _Open-unmix_ model with her/his own data. We therefore provide datasets that can easiliy parse random file based data. Users of _Open-Unmix_ that have their own datasets and could not fit one of our predefined datasets might want to implement or use their own `torch.utils.data.Dataset` to be used for the training. Such a modification is very simple and we additionally provide a [dataset template]().
 
-We designed _Open-Unmix_ so that the training of multiple targets is handled in separate models. We think that this has several benefits such as:
+2. _custom models_: We think that recurrent models provide the best trade-off between good results, fast training and flexibility of training due to its ability to learn from arbitrary durations of audio and different audio representations. Furthermore since the audio signals at test time can be of arbitrary lengths, the recurrent models yield the best consistency of the results within one audio track. If users want to try different models you can easily build our [model template]().
 
-- single source models can leverage unbalanced data where for each source different size of training data is available/
-- training can easily distributed by training multiple models on different nodes in parallel.
-- at test time the selection of different models can be adjusted for specific applications.
-
-### Sigsep ecosystem
-
-- Datasets: MUSDB18 [@rafii17], MUSDB18HQ [@musdb18hq].
-- Parsers: musdb python parser [@musdb].
-- Evaluation: museval [@museval] evaluation framework.
-- Post-Processing: multi-channel wiener filter implementation [@norbert].
+3. _joint models_: We designed _Open-Unmix_ so that the training of multiple targets is handled in separate models. We think that this has several benefits such as: First, single source models can leverage unbalanced data where for each source different size of training data is available. Second, training can easily distributed by training multiple models on different nodes in parallel. Third, at test time the selection of different models can be adjusted for specific applications. Adjusting _Open-Unmix_ to support joint training is simple, and we provide an example in [our documentation]().
 
 # References
