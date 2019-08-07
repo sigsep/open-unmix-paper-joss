@@ -155,7 +155,7 @@ The constitutive parts of the actual deep model used in _Open-Unmix_ only compri
 
 Note that the model can process and predict multichannel spectrograms by stacking features.
 Furthermore, please note that the input and output to _Open-Unmix_ are magnitude spectrograms.
-Although using phase as additional input feature [@muth2018improving] or estimating the instrument phase [@takahashi2018phasenet] are interesting approaches, they have not shown significant improvement for music separation.
+Although using phase as additional input feature [@muth2018improving] or estimating the instrument phase [@le2019phasebook; @takahashi2018phasenet] are interesting approaches, they have not shown significant improvement for music separation.
 
 
 ### Training
