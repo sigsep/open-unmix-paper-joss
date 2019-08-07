@@ -130,7 +130,7 @@ We will now give more technical details about _Open-Unmix_. Fig. \ref{block_diag
 
 When designing a machine-learnig based method, our first step was to encapsulate cleanly the data-processing aspects.
 
-- __Datasets__: we support the _MUSDB18_ which is the most established dataset for music separation which we released some years ago [@rafii17]. The dataset contains 150 full lengths music tracks (~10h duration) of different musical styles along with their isolated `drums`, `bass`, `vocals` and `others` stems. _MUSDB18_ is split into _training_ (100 songs) and _test_  subsets (50 songs). All files from the _MUSDB18_ dataset are encoded in the Native Instruments stems format (.mp4) to reduce the file size. It is a multitrack format composed of 5 stereo streams, each one encoded in AAC @256kbps. Since AAC is bandwidth limited to 16 kHz instead of 22 kHz for full bandwidth, any model trained on _MUSDB18_ would not be able to output high quality content. As part of the release of _Open-Unmix_, we also released _MUSDB18-HQ_ [@musdb18hq], which is the uncompressed, full quality version of the _MUSDB18_ dataset.
+- __Datasets__: we support the _MUSDB18_ which is the most established dataset for music separation which we released some years ago [@rafii17]. The dataset contains 150 full lengths music tracks (~10h duration) of different musical styles along with their isolated `drums`, `bass`, `vocals` and `others` stems. _MUSDB18_ is split into _training_ (100 songs) and _test_  subsets (50 songs). All files from the _MUSDB18_ dataset are encoded in the Native Instruments [stems format](https://www.native-instruments.com/en/specials/stems/) (.mp4) to reduce the file size. It is a multitrack format composed of 5 stereo streams, each one encoded in AAC ``@``256kbps. Since AAC is bandwidth limited to 16 kHz instead of 22 kHz for full bandwidth, any model trained on _MUSDB18_ would not be able to output high quality content. As part of the release of _Open-Unmix_, we also released _MUSDB18-HQ_ [@musdb18hq], which is the uncompressed, full quality version of the _MUSDB18_ dataset.
 - __Efficient dataloading and transforms__: since preparing the batches for training is often the efficiency bottleneck, extra-care was taken to optimize speed and performance. Here, we use framwork specific data loading API instead of a generic module. For all frameworks we use the builtin STFT transform operator, when available, that works on the GPU to improve performance (See [@choi17]).
 - __Essential augmentations__: data augmentation techniques for source separation are described in  [@uhlich17] which we adopted here. They enable to attain good performance even though the audio datasets such as _MUSDB18_ are often of limited size.
 - __Post processing__: add details to norbert. <!-- TODO: Antoine -->
@@ -146,7 +146,7 @@ The system is trained to predict a separated source from the observation of its 
 Even if we acknowledge that such an approach could in theory allow to scale the size of training data since it can be done in an _unpaired_ manner, we feel that this direction is still in progress and cannot be considered state-of-the-art today.
 That said, the _Open-Unmix_ system can easily be extended to such generative training, and the community is much welcome to exploit it for that purpose.
 
-The constitutive parts of the actual deep model used in _Open-Unmix_ only comprise very classical elements, depicted in Figure. \ref{separation_network}. Note that the model can process and predict multichannel spectrograms by stacking the features.
+The constitutive parts of the actual deep model used in _Open-Unmix_ only comprise very classical elements, depicted in Fig. \ref{separation_network}. Note that the model can process and predict multichannel spectrograms by stacking the features.
 
 ![Separation network\label{separation_network}](https://docs.google.com/drawings/d/e/2PACX-1vTPoQiPwmdfET4pZhue1RvG7oEUJz7eUeQvCu6vzYeKRwHl6by4RRTnphImSKM0k5KXw9rZ1iIFnpGW/pub?w=959&h=308)
 
@@ -180,9 +180,11 @@ For the output scaler, we initialize the offset and scale to 1.0, i.e., the netw
 
 ## Results
 
-The final models were trained using the pytorch version of _Open-Unmix_ on the original versions of _MUSDB18_ but also on _MUSDB-HQ_ as mentioned earlier. Both models were evaluated using museval [@museval] on the test set of  _MUSDB18_. The result scores are listed in the following table. It is important to note that these scores are aggregated using median over the metric frames and median over the tracks. The scores in native museval JSON format as well as the pre-trained weights are released on the on zenodo [link_to_zenodo]. Furthermore, we adopted [torch.hub](https://pytorch.org/hub), a system that automatically downloads pre-trained weights thus makes it very easy to use the model out of the box from python.
+The final models were trained using the PyTorch version of _Open-Unmix_ on the original version of _MUSDB18_ but also on _MUSDB-HQ_ as mentioned earlier. Both models were evaluated using museval [@museval] on the test set of  _MUSDB18_ such that we can compare their performance to the other participants of the SiSEC 2018 contest [@sisec18]. The result scores are listed in Table \ref{tab:bss_eval_scores}. It is important to note that these scores are aggregated using median over the metric frames and median over the tracks. The scores in native museval JSON format as well as the pre-trained weights are released on zenodo [link_to_zenodo]. Furthermore, we adopted [torch.hub](https://pytorch.org/hub), a system that automatically downloads pre-trained weights thus makes it very easy to use the model out of the box from python.
 
 Conerning the performance, it is interesting to note that _UMXHQ_ performs very similar to _UMX_, thus we made _UMXHQ_ the default model for inference and suggest that _UMX_ should only be used when compared against other participants from SiSEC 2018. The models are full stereo for input and output. A detailed list of all the parameters that were used to train the model are part of the model repository on zenodo. They also include the exact git commit that was used to train the model. [link_to_zenodo].
+
+Table: BSSEval scores of _UMX_ and _UMXHQ_ on _MUSDB18_ \label{tab:bss_eval_scores}
 
 |target|SDR  |SIR  | SAR | ISR | SDR | SIR | SAR | ISR |
 |------|-----|-----|-----|-----|-----|-----|-----|-----|
@@ -196,7 +198,7 @@ Conerning the performance, it is interesting to note that _UMXHQ_ performs very 
 
 ![Boxplots of evaluation results of the `UMX` model compared with other methods from [@sisec18] (methods that did not only use MUSDB18 for training were ommitted)\label{boxplot}](boxplot.pdf)
 
-We compared _Open-Unmix_ to other separation models as submitted in the last SiSEC [@sisec18]. The results of the `UMX` are depicted in \ref{boxplot}. It can be seen that we our proposed model reaches state-of-the-art results. In fact there is no statistical significant different between the best method `TAK1` and `UMX`. Considering the fact that `TAK1` is not released as open source, this indicates that _Open-Unmix_ is the current state-of-the-art open source source separation systems.
+We compared _Open-Unmix_ to other separation models that were submitted to the last SiSEC contest [@sisec18]. The results of the `UMX` are depicted in \ref{boxplot}. It can be seen that our proposed model reaches state-of-the-art results. In fact there is no statistical significant different between the best method `TAK1` and `UMX`. Considering the fact that `TAK1` is not released as open source, this indicates that _Open-Unmix_ is the current state-of-the-art open source source separation systems.
 
 # Community
 
