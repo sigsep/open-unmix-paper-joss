@@ -114,7 +114,7 @@ Keeping in mind that the learning curve can be quite steep in audio processing, 
 
 ### Reproducible
 
-Releasing _Open-Unmix_ is first and foremost an attempt to provide a reliable implementation sticking to established programming practice. In particular:
+Releasing _Open-Unmix_ is first and foremost an attempt to provide a reliable implementation sticking to established programming practice as were also proposed in [@mcfee2018open]. In particular:
 
 - __reproducible code__: everything is provided to exactly reproduce our experiments and display our results.
 - __pre-trained models__: we provide pre-trained weights that allow to use the model right away or fine-tune it on user-provided data.
@@ -124,7 +124,7 @@ Releasing _Open-Unmix_ is first and foremost an attempt to provide a reliable im
 
 ![Block diagram of _Open-Unmix_\label{block_diagram}](UMX_BlockDiagram.pdf)
 
-We will now give more technical details about _Open-Unmix_. Fig. \ref{block_diagram} shows the basic approach. During training, we learn a DNN which can be later used for separating songs.
+We will now give more technical details about _Open-Unmix_. Fig. \ref{block_diagram} and \ref{processing_pipeline} show the basic approach. During training, we learn a DNN which can be later used for separating songs.
 
 ### Datasets and Dataloaders
 
@@ -133,28 +133,30 @@ When designing a machine-learnig based method, our first step was to encapsulate
 - __Datasets__: we support the _MUSDB18_ which is the most established dataset for music separation which we released some years ago [@rafii17]. The dataset contains 150 full-lengths music tracks (~10h duration) of different musical styles along with their isolated `drums`, `bass`, `vocals` and `others` stems. _MUSDB18_ is split into _training_ (100 songs) and _test_ subsets (50 songs). All files from the _MUSDB18_ dataset are encoded in the Native Instruments [stems format](https://www.native-instruments.com/en/specials/stems/) (.mp4) to reduce the file size. It is a multitrack format composed of 5 stereo streams, each one encoded in AAC ``@``256kbps. Since AAC is bandwidth limited to 16 kHz instead of 22 kHz for full bandwidth, any model trained on _MUSDB18_ would not be able to output high-quality content. As part of the release of _Open-Unmix_, we also released _MUSDB18-HQ_ [@musdb18hq], which is the uncompressed, full-quality version of the _MUSDB18_ dataset.
 - __Efficient data-loading and transforms__: since preparing the batches for training is often the efficiency bottleneck, extra-care was taken to optimize speed and performance. Here, we use a framework-specific data loading API instead of a generic module. For all frameworks we use the builtin STFT transform operator, when available, that works on the GPU to improve performance (See [@choi17]).
 - __Essential augmentations__: data augmentation techniques for source separation are described in [@uhlich17] which we adopted here. They enable to attain good performance even though the audio datasets such as _MUSDB18_ are often of limited size.
-- __Post processing__: add details to `norbert`. <!-- TODO: Antoine -->
+- __Post processing__: is an important step that helps to improve the overall performance by combining the outputs of all instrument DNNs. We use a multichannel Wiener filter (MWF) as was proposed in [@nugraha16; @sivasankaran2015robust] and which we open-sourced in `norbert`. <!-- TODO: Antoine -->
 
 ### Model
 
 ![General processing pipeline\label{processing_pipeline}](General_Processing_Pipeline.pdf)
 
-<!-- TODO: Stefan -->
-<!-- Add note about phase (we are only focusing on magnitudes for separation). -->
-
 The system is trained to predict a separated source from the observation of its mixture with other sources. The corresponding training is done in a _discriminative_ way, i.e. through a dataset of mixtures paired with their true separated sources. These are used as ground truth targets from which gradients are computed. Although alternative ways to train a separation system have emerged recently, notably through _generative_ strategies trained through adversarial cost functions, they still did not lead to comparable performance.
 Even if we acknowledge that such an approach could, in theory, allow scaling the size of training data since it can be done in an _unpaired_ manner, we feel that this direction is still in progress and cannot be considered state-of-the-art today.
 That said, the _Open-Unmix_ system can easily be extended to such generative training, and the community is much welcome to exploit it for that purpose.
 
-The constitutive parts of the actual deep model used in _Open-Unmix_ only comprise very classical elements, depicted in Fig. \ref{separation_network}. Note that the model can process and predict multichannel spectrograms by stacking the features.
-
 ![Separation network\label{separation_network}](https://docs.google.com/drawings/d/e/2PACX-1vTPoQiPwmdfET4pZhue1RvG7oEUJz7eUeQvCu6vzYeKRwHl6by4RRTnphImSKM0k5KXw9rZ1iIFnpGW/pub?w=959&h=308)
+
+The constitutive parts of the actual deep model used in _Open-Unmix_ only comprise very classical elements, depicted in Fig. \ref{separation_network}:
 
 - _LSTM_: The core of _Open-Unmix_ is a three-layer bidirectional LSTM network [@Hochreiter97]. Due to its recurrent nature, the model can be trained and evaluated on arbitrary length of audio signals. Since the model takes information from the past and future simultaneously, the model cannot be used in an online/real-time manner. An uni-directional model can easily be trained.
 - _Fully connected time-distributed layers_ are used for dimensionality reduction and augmentation, thus encoding/decoding the input and output. They allow control over the number of parameters of the model and prove to be crucial for generalization.
 - _Skip connections_ are used in two ways: i/ the output to recurrent layers are augmented with their input, and this proved to help convergence. ii/ The output spectrogram is computed as an element-wise multiplication of the input. This means that the system has to learn _how much each TF bin does belong to the target source_ and not the _actual_ value of that bin. This is _critical_ for obtaining good performance and combining the estimates given for several targets, as done in _Open-unmix_.
 - _Non linearities_ are of three kinds: i/ rectified linear units (ReLU) allow intermediate layers to comprise nonnegative activations, which long proved effective in TF modeling. ii/ `tanh` are known to be necessary for good training of LSTM model, notably because they avoid exploding input and output. iii/ a `sigmoid` activation is chosen before masking, to mimic the way legacy systems take the outputs as a _filtering_ of the input.
 - _Batch normalization_ long proved important for stable training, because it makes the different batches more similar in terms of distributions. In the case of audio where signal dynamics can be very important, this is crucial.
+
+Note that the model can process and predict multichannel spectrograms by stacking features.
+Furthermore, please note that the input and output to _Open-Unmix_ are magnitude spectrograms.
+Although using phase as additional input feature [@muth2018improving] or estimating the instrument phase [@takahashi2018phasenet] are interesting approaches, they have not shown significant improvement for music separation.
+
 
 ### Training
 
