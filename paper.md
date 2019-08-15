@@ -31,7 +31,7 @@ date: 17 July 2019
 bibliography: paper.bib
 ---
 
-# Abstract
+# Summary
 
 Music source separation is the task of decomposing music into its constitutive components, e.g., yielding separated stems for the vocals, bass, and drums.
 Such a separation has many applications ranging from rearranging/repurposing the stems (remixing, repanning, upmixing) to full extraction (karaoke, sample creation, audio restoration).
@@ -81,21 +81,12 @@ Also, the lack of a common reference for the community potentially miss-guides y
 Today, a lot of new research in signal processing comes from applying machine learning to specific tasks such as music separation.
 With the rise of simple to use machine learning frameworks such as _Keras_, _Tensorflow_, _Pytorch_ or _NNabla_, the technical challenge of developing a music separation system appears to be very low at first sight.
 However, the lack of domain knowledge about the specifics of music signals often results in weak performance where issues are difficult to track using learning-based algorithms.
-We could observe this problem in [@sisec16; @sisec18], when we organized the source separation evaluation campaign. More complex deep architectures potentially underperform simpler models just because of subtle differences in pre- and postprocessing. These problems could have been discussed more systematically if the proposed methods would have been open-source.
 We, therefore, designed _Open-Unmix_ to address these issues by relying on procedures that were verified by the community or proven to be working well by literature.
 
 ## Design Choices
 
 The design choices made for _Open-Unmix_ have sought to reach two somewhat contradictory objectives. Its first aim is to have state-of-the-art performance, and its second aim is to still be easily understandable so that it could serve as a basis for research allowing improved performance in the future. In the past, many researchers faced difficulties in pre- and post-processing that could be avoided by sharing domain knowledge.
-The aim was hence to design a system that allows researchers to focus on:
-
-- new representations, in which case there is a need for established separation architectures to use as a basis for evaluation.
-- new architectures, which needs solid pre and post-processing pipelines.
-
-In short, _Open-Unmix_ inputs mixtures in the waveform domain and transforms them using a time-frequency representation, before applying a series of non-linear layers to predict the spectrogram of a target source. At the end of the chain, a postprocessing system gathers the estimates for all sources and combines them through a multichannel Wiener filter to obtain the separated waveforms.
-
-The most critical aspects of the choices can be summarized by stating that the system heavily relies on __expert-knowledge__: while end-to-end systems that directly produce estimates in the waveform (time) domain are a promising research direction, they currently do not lead to a state-of-the-art performance in music separation.
-On the contrary, systems operating in the time-frequency (TF) domain are still observed to significantly outperform more "modern" solutions that would bypass the expert knowledge required by TF processing.
+The aim was hence to design a system that allows researchers to focus on A) new representations and B) new architectures.
 
 ### Framework specific vs. framework agnostic
 
@@ -103,13 +94,13 @@ _Open-unmix_ is developed in parallel for multiple frameworks to cover the large
 Likewise, the NNabla is close to the PyTorch code.
 The Tensorflow version will be released later when Tensorflow 2.0 is stable and will be more production-oriented (inference).
 
-### Hackable, Fast and Simple
+### "MNIST-like"
 
 Keeping in mind that the learning curve can be quite steep in audio processing, we did our best for _Open-unmix_ to be:
 
 - __simple to extend__: the pre/post-processing, data-loading, training and models part of the code is isolated and easy to replace/update. In particular, an extra-effort was done on making it easy to replace the  model.
 - __not a package__: keeping it easy to use to change the code made us design the software to be composed of largely independent and self-containing parts.
-- __hackable (MNIST like)__: due to our objective of making it easier for machine-learning experts to try out music separation, we did our best to stick to the philosophy of baseline implementations for this community. In particular, _Open-unmix_ mimics the famous MNIST example including the ability to instantly start training on data that is automatically downloaded.
+- __hackable (MNIST like)__: due to our objective of making it easier for machine-learning experts to try out music separation, we did our best to stick to the philosophy of baseline implementations for this community. In particular, _Open-unmix_ mimics the famous MNIST example including the ability to instantly start training on a dataset that is automatically downloaded.
 
 ### Reproducible
 
@@ -117,85 +108,9 @@ Releasing _Open-Unmix_ is first and foremost an attempt to provide a reliable im
 
 - __reproducible code__: everything is provided to exactly reproduce our experiments and display our results.
 - __pre-trained models__: we provide pre-trained weights that allow to use the model right away or fine-tune it on user-provided data.
-- __tests__: the release includes unit tests and regression tests useful to organize future open collaboration using pull-requests.
-
-## Technical Details
-
-![Block diagram of _Open-Unmix_\label{block_diagram}](UMX_BlockDiagram.pdf)
-
-We will now give more technical details about _Open-Unmix_. Fig. \ref{block_diagram} and \ref{processing_pipeline} show the basic approach. During training, we learn a DNN which can be later used for separating songs.
-
-### Datasets and Dataloaders
-
-When designing a machine-learnig based method, our first step is to encapsulate cleanly the data-processing aspects.
-
-- __Datasets__: we support the _MUSDB18_ which is the most established dataset for music separation, that we released some years ago [@rafii17]. The dataset contains 150 full-lengths music tracks (~10h duration) of different musical styles along with their isolated `drums`, `bass`, `vocals` and `others` stems. _MUSDB18_ is split into _training_ (100 songs) and _test_ subsets (50 songs). All files from the _MUSDB18_ dataset are encoded in the Native Instruments [stems format](https://www.native-instruments.com/en/specials/stems/) (.mp4) to reduce the file size. It is a multitrack format composed of 5 stereo streams, each one encoded in AAC ``@``256kbps. Since AAC is bandwidth limited to 16 kHz instead of 22 kHz for full bandwidth, any model trained on _MUSDB18_ would not be able to output high-quality content. As part of the release of _Open-Unmix_, we also released _MUSDB18-HQ_ [@musdb18hq], which is the uncompressed, full-quality version of the _MUSDB18_ dataset.
-- __Efficient data-loading and transforms__: since preparing the batches for training is often the efficiency bottleneck, extra-care was taken to optimize speed and performance. Here, we use a framework-specific data loading API instead of a generic module. For all frameworks we use the builtin STFT transform operator, when available, that works on the GPU to improve performance (See [@choi17]).
-- __Essential augmentations__: the data augmentation techniques we adopted here for source separation are described in [@uhlich17]. They enable to attain good performance even though the audio datasets such as _MUSDB18_ are often of limited size.
-- __Post processing__: is an important step that helps to improve the overall performance by combining the outputs of all instrument DNNs. We use a multichannel Wiener filter (MWF) as was proposed in [@nugraha16; @sivasankaran2015robust] and which we open-sourced in the [`sigsep.norbert`](https://github.com/sigsep/norbert) repository
-
-### Model
-
-![General processing pipeline\label{processing_pipeline}](General_Processing_Pipeline.pdf)
-
-The system is trained to predict a separated source from the observation of its mixture with other sources. The corresponding training is done in a _discriminative_ way, i.e. through a dataset of mixtures paired with their true separated sources. These are used as ground truth targets from which gradients are computed. Although alternative ways to train a separation system have emerged recently, notably through _generative_ strategies trained through adversarial cost functions, they still did not lead to comparable performance.
-Even if we acknowledge that such an approach could, in theory, allow scaling the size of training data since it can be done in an _unpaired_ manner, we feel that this direction is still in progress and cannot be considered state-of-the-art today.
-That said, the _Open-Unmix_ system can easily be extended to such generative training, and the community is much welcome to exploit it for that purpose.
-
-![Separation network\label{separation_network}](https://docs.google.com/drawings/d/e/2PACX-1vTPoQiPwmdfET4pZhue1RvG7oEUJz7eUeQvCu6vzYeKRwHl6by4RRTnphImSKM0k5KXw9rZ1iIFnpGW/pub?w=959&h=308)
-
-The constitutive parts of the actual deep model used in _Open-Unmix_ only comprise very classical elements, depicted in Fig. \ref{separation_network}:
-
-- _LSTM_: The core of _Open-Unmix_ is a three-layer bidirectional LSTM network [@Hochreiter97]. Due to its recurrent nature, the model can be trained and evaluated on arbitrary length of audio signals. Since the model takes information from the past and future simultaneously, the model cannot be used in an online/real-time manner. An uni-directional model can easily be trained.
-- _Fully connected time-distributed layers_ are used for dimensionality reduction and augmentation, thus encoding/decoding the input and output. They allow control over the number of parameters of the model and prove to be crucial for generalization.
-- _Skip connections_ are used in two ways: i/ the output to recurrent layers are augmented with their input, and this proved to help convergence. ii/ The output spectrogram is computed as an element-wise multiplication of the input. This means that the system has to learn _how much each TF bin does belong to the target source_ and not the _actual_ value of that bin. This is _critical_ for obtaining good performance and combining the estimates given for several targets, as done in _Open-unmix_.
-- _Non linearities_ are of three kinds: i/ rectified linear units (ReLU) allow intermediate layers to comprise nonnegative activations, which long proved effective in TF modeling. ii/ `tanh` are known to be necessary for good training of LSTM model, notably because they avoid exploding input and output. iii/ a `sigmoid` activation is chosen before masking, to mimic the way legacy systems take the outputs as a _filtering_ of the input.
-- _Batch normalization_ long proved important for stable training, because it makes the different batches more similar in terms of distributions. In the case of audio where signal dynamics can be very important, this is crucial.
-
-Note that the model can process and predict multichannel spectrograms by stacking features.
-Furthermore, please note that the input and output to the _Open-Unmix_ core deep model are magnitude spectrograms.
-Although using phase as additional input feature [@muth2018improving] or estimating the instrument phase [@le2019phasebook; @takahashi2018phasenet] are interesting approaches, they have not yet been submitted to international evaluation campaigns like SiSEC for music separation.
-
-
-### Training
-
-The experience gained during the research we did for releasing _Open-Unmix_ taught us that successful __training__ of the model requires expert knowledge that we want to share with the community, since only an implementation can enable widespread diffusion of these techniques.
-Indeed, those tricks are often deemed of not sufficient scientific importance to be found in scientific papers.
-
-In particular, we use the following setup for training: We learn the weights of the BLSTM by minimizing the mean squared error (MSE) with the ADAM optimizer [@kingma2014adam].
-We start with an initial learning rate of 0.001 which is sequentially reduced by a factor of 0.3 if the validation error plateaus. Besides saving the current model, we also save the best model on the validation dataset, i.e., perform early stopping. The validation set consists of 14 songs, which we selected from the 100 training songs. For reproducibility, the validation split is part of the [@musdb] tools.
-
-Furthermore, heavy data augmentation is used due to the small size of MUSDB.
-We use the data augmentation as described in [@uhlich17]:
-
-- random swapping left/right channel for each instrument,
-- random scaling with uniform amplitudes from [0.25,1.25],
-- random chunking into sequences for each instrument, and,
-- random mixing of instruments from different songs.
-
-For training the recurrent layers, we use sequences that correspond to six seconds duration and use 16 samples per minibatch.
-
-As shown in Fig. \ref{separation_network}, the model uses an input scaler and output scaler, which both subtract an offset and multiply with a scale for each frequency bin.
-For the input scaler, we initialize the offset and scale by the mean and standard deviation of the mixture magnitudes, which are computed from the training dataset.
-For the output scaler, we initialize the offset and scale to 1.0, i.e., the network is initialized such that it starts from a mask with all-ones, i.e., it uses the mixture signal as the first estimate.
+- __tests__: the release includes unit tests, useful to organize future open collaboration using pull-requests.
 
 ## Results
-
-The final models were trained using the PyTorch version of _Open-Unmix_ on the original version of _MUSDB18_ but also on _MUSDB-HQ_ as mentioned earlier. Both models were evaluated using museval [@museval] on the test set of _MUSDB18_ such that we can compare their performance to the other participants of the SiSEC 2018 contest [@sisec18]. The result scores are listed in Table \ref{tab:bss_eval_scores}. It is important to note that these scores are aggregated using median over the metric frames and median over the tracks. The scores in native museval JSON format, as well as the pre-trained weights, are released on zenodo [link_to_zenodo]. Furthermore, we adopted [torch.hub](https://pytorch.org/hub), a system that automatically downloads pre-trained weights, thus making it very easy to use the model out of the box from python.
-
-Concerning the performance, it is interesting to note that _UMXHQ_ performs very similar to _UMX_, thus we made _UMXHQ_ the default model for inference and suggest that _UMX_ should only be used when compared against other participants from SiSEC 2018. The models are full stereo for input and output. A detailed list of all the parameters that were used to train the model is part of the model repository on zenodo. They also include the exact git commit that was used to train the model. [link_to_zenodo].
-
-Table: BSSEval scores of _UMX_ and _UMXHQ_ on _MUSDB18_ \label{tab:bss_eval_scores}
-
-|target|SDR |SIR | SAR | ISR | SDR | SIR | SAR | ISR |
-|------|-----|-----|-----|-----|-----|-----|-----|-----|
-|`model`|UMX |UMX |UMX |UMX |UMXHQ|UMXHQ|UMXHQ|UMXHQ|
-|vocals|6.32 |13.33| 6.52|11.93| 6.25|12.95| 6.50|12.70|
-|bass |5.23 |10.93| 6.34| 9.23| 5.07|10.35| 6.02| 9.71|
-|drums |5.73 |11.12| 6.02|10.51| 6.04|11.65| 5.93|11.17|
-|other |4.02 |6.59 | 4.74| 9.31| 4.28| 7.10| 4.62| 8.78|
-
-### Objective Evaluation
 
 ![Boxplots of evaluation results of the `UMX` model compared with other methods from [@sisec18] (methods that did not only use MUSDB18 for training were omitted)\label{boxplot}](boxplot.pdf)
 
@@ -214,12 +129,6 @@ We also are the organizers of the largest source separation evaluation campaign 
 
 ## Outlook
 
-_Open-Unmix_ is a community-focused project, we, therefore, encourage the community to submit bug-fixes and comments and improve the computational performance. However, we are not looking for changes that only focused on improving the separation performance as this would be out of scope for a baseline implementation. Instead, we expect many researchers will fork the software as a basis for their research. We prepared several custom options to easily extend the code:
-
-1. _native dataset and data loader APIs_: This encourages the interested researcher to train _Open-unmix_ model with her/his data. We, therefore, provide datasets that can easily parse random file-based data. Users of _Open-Unmix_ that have their datasets and could not fit one of our predefined datasets might want to implement or use their own `torch.utils.data.Dataset` to be used for the training. Such a modification is very simple and we additionally provide a [dataset template]().
-
-2. _custom models_: We think that recurrent models provide the best trade-off between good results, fast training and flexibility of training due to its ability to learn from arbitrary durations of audio and different audio representations. Furthermore, since the audio signals at test time can be of arbitrary lengths, the recurrent models yield the best consistency of the results within one audio track. If users want to try different models you can easily build on the proposed [model template]().
-
-3. _joint models_: We designed _Open-Unmix_ so that the training of multiple targets is handled in separate models. We think that this has several benefits such as: First, single-source models can leverage unbalanced data where for each source different size of training data is available. Second, training can easily be distributed by training multiple models on different nodes in parallel. Third, at test time the selection of different models can be adjusted for specific applications. Adjusting _Open-Unmix_ to support joint training is simple, and we provide an example in [our documentation]().
+_Open-Unmix_ is a community-focused project, we, therefore, encourage the community to submit bug-fixes and comments and improve the computational performance. However, we are not looking for changes that only focused on improving the separation performance as this would be out of scope for a baseline implementation. Instead, we expect many researchers will fork the software as a basis for their research and we prepared several custom options to easily extend the code as shown [here](https://github.com/sigsep/open-unmix-pytorch/blob/master/docs/extensions.md).
 
 # References
