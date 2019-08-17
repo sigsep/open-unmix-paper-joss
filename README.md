@@ -1,8 +1,7 @@
-# Open-Unmix-joss Paper
+# Open-Unmix-JOSS Paper
 
-## Write
-
-just edit `paper.md` and `paper.bib`
+__Related Projects:__ pytorch | [nnabla](https://github.com/sigsep/open-unmix-nnabla) | [tensorflow](https://github.com/sigsep
+/open-unmix-tensorflow) | [musdb](https://github.com/sigsep/sigsep-mus-db) | [museval](https://github.com/sigsep/sigsep-mus-eval) | [norbert](https://github.com/sigsep/norbert)
 
 ## Create paper locally
 
