@@ -14,3 +14,11 @@
 	path = nnabla
 	url = git@github.com:sigsep/open-unmix-nnabla.git
 	branch = master
+[submodule "museval"]
+	path = museval
+	url = git@github.com:sigsep/sigsep-mus-eval.git
+	branch = master
+[submodule "musdb"]
+	path = musdb
+	url = git@github.com:sigsep/sigsep-mus-db.git
+	branch = master
