@@ -1,5 +1,5 @@
 ---
-title: 'Open-Unmix - A reference implementation for audio source separation'
+title: 'Open-Unmix - A Reference Implementation for Music Source Separation'
 tags:
   - Python
   - audio
@@ -11,11 +11,13 @@ authors:
     orcid: 0000-0003-0872-7098
     affiliation: 1
   - name: Stefan Uhlich
+    orcid: 0000-0003-3158-4945
     affiliation: 2
   - name: Antoine Liutkus
     orcid: 0000-0002-3458-6498
     affiliation: 1
   - name: Yuki Mitsufuji
+    orcid: 0000-0002-6806-6140
     affiliation: 3
 affiliations:
  - name: Inria and LIRMM, University of Montpellier, France
