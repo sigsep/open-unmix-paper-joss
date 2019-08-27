@@ -31,21 +31,25 @@ Open-Unmix is developed for multiple frameworks (for now Pytorch, Tensorflow and
 
 A python package to parse and process the MUSDB18 dataset, the largest open access dataset for music source separation. 
 
-* Code: [musdb](https://github.com/sigsep/sigsep-mus-db) 
-* Tag: `v0.3.0`
-* Status: released on pypi in version 0.3.0 
+* Code: [musdb](https://github.com/sigsep/sigsep-mus-db/tree/v0.3.1) 
+* Tag: `v0.3.1`
+* Status: released on pypi in version 0.3.1
+* [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3271451.svg)](https://doi.org/10.5281/zenodo.3271451)
+
 
 ### museval objective evaluation
 
-* Code: [museval](https://github.com/sigsep/sigsep-mus-eval) 
+* Code: [museval](https://github.com/sigsep/sigsep-mus-eval/tree/v0.3.0) 
 * Tag: `v0.3.0`
 * Status: released on pypi in version 0.3.0 
+* [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3376621.svg)](https://doi.org/10.5281/zenodo.3376621)
 
 ### norbert: wiener filter implementations
 
-* Code: [norbert](https://github.com/sigsep/norbert)
+* Code: [norbert](https://github.com/sigsep/norbert/tree/v0.2.0)
 * Status: released on pypi in version 0.2.0 
 * Tag: `v0.2.0`
+* [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3269749.svg)](https://doi.org/10.5281/zenodo.3269749)
 
 ## Paper
 
