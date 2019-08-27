@@ -110,7 +110,7 @@ Releasing _Open-Unmix_ is first and foremost an attempt to provide a reliable im
 
 ![Boxplots of evaluation results of the `UMX` model compared with other methods from [@sisec18] (methods that did not only use MUSDB18 for training were omitted)\label{boxplot}](boxplot.pdf)
 
-We compared _Open-Unmix_ to other separation models that were submitted to the last SiSEC contest [@sisec18]. The results of the `UMX` are depicted in \ref{boxplot}. It can be seen that our proposed model reaches state-of-the-art results. There is no statistically significant difference between the best method `TAK1` and `UMX`. Because `TAK1` is not released as open-source, this indicates that _Open-Unmix_ is the current state-of-the-art open-source source separation systems.
+_Open-Unmix_ is based on the bi-directional LSTM model from [@uhlich17] and we compared it to other separation models that were submitted to the last SiSEC contest [@sisec18]. The results of `UMX` are depicted in \ref{boxplot}. It can be seen that our proposed model reaches state-of-the-art results. There is no statistically significant difference between the best method `TAK1` and `UMX`. Because `TAK1` is not released as open-source, this indicates that _Open-Unmix_ is the current state-of-the-art open-source source separation systems.
 
 # Community
 
