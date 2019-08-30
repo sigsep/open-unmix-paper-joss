@@ -2,7 +2,7 @@
 
 This repository combines the software contributions for _open-unmix_, a reference implementation for deep learning based music source separation.
 
-Open-Unmix is developed for multiple frameworks (for now Pytorch, Tensorflow and NNabla). To respect the specifics of each framework we did not aim to achive identical performance for each framework. In fact, the Pytorch implementation was selected to be the _lead implementation_ as we think it currently offers the best tradeoff between simple code and easy deployment while being simple to extend for researchers.
+We choose _PyTorch_ to serve as a reference implementation for this submission due to its balance between simplicity and modularity. Furthermore, we already ported the core model to [NNabla](https://github.com/sigsep/open-unmix-nnabla) and plan to release a port for Tensorflow 2.0, once the framework is released. Note that the ports will not include pre-trained models as we cannot make sure the ports would yield identical results, thus leaving a single baseline model for researchers to compare with
 
 ## Software Packages
 
@@ -12,20 +12,7 @@ Open-Unmix is developed for multiple frameworks (for now Pytorch, Tensorflow and
 * Status: feature complete
 * Tag: 1.0.0
 * Pretrained models: [UMXHQ](https://zenodo.org/record/3370489) and [UMX](https://zenodo.org/record/3370486)
-
-### Open-Unmix for NNabla
-
-* Code: [open-unmix-nnabla](https://github.com/sigsep/open-unmix-nnabla)
-* Status: model is feature complete. Extended dataset and training parameters missing
-* Tag: master
-* Pretrained models: not available
-
-### Open-Unmix for Tensorflow 
-
-* Code: [open-unmix-tensorflow](https://github.com/sigsep/open-unmix-tensorflow)
-* Status: in development
-* Tag: master
-* Pretrained models: not available
+* [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3382104.svg)](https://doi.org/10.5281/zenodo.3382104)
 
 ### musdb dataset parser
 
@@ -35,7 +22,6 @@ A python package to parse and process the MUSDB18 dataset, the largest open acce
 * Tag: `v0.3.1`
 * Status: released on pypi in version 0.3.1
 * [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3271451.svg)](https://doi.org/10.5281/zenodo.3271451)
-
 
 ### museval objective evaluation
 
