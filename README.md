@@ -10,7 +10,7 @@ We choose _PyTorch_ to serve as a reference implementation for this submission d
 
 * Code: [open-unmix-pytorch](https://github.com/sigsep/open-unmix-pytorch)
 * Status: feature complete
-* Tag: 1.0.0
+* Tag: `v1.0.0`
 * Pretrained models: [UMXHQ](https://zenodo.org/record/3370489) and [UMX](https://zenodo.org/record/3370486)
 * [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3382104.svg)](https://doi.org/10.5281/zenodo.3382104)
 
