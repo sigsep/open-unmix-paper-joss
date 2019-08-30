@@ -1,19 +1,11 @@
-[submodule "norbert"]
-	path = norbert
-	url = git@github.com:sigsep/norbert.git
-	branch = master
 [submodule "pytorch"]
 	path = pytorch
 	url = git@github.com:sigsep/open-unmix-pytorch.git
 	branch = master
-[submodule "tensorflow"]
-	path = tensorflow
-	url = git@github.com:sigsep/open-unmix-tensorflow.git
-	branch = master
-[submodule "nnabla"]
-	path = nnabla
-	url = git@github.com:sigsep/open-unmix-nnabla.git
-	branch = master
+[submodule "norbert"]
+        path = norbert
+        url = git@github.com:sigsep/norbert.git
+        branch = master
 [submodule "museval"]
 	path = museval
 	url = git@github.com:sigsep/sigsep-mus-eval.git
