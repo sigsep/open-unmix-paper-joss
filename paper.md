@@ -68,15 +68,15 @@ In 2016, the _untwist_ library was proposed in [@roma16]. It comprises several m
 _Nussl_ is a very recent framework, presented in [@manilow18]. It includes a large number of methods and generally focuses on classical signal processing methods rather than machine-learning-based techniques. It has built-in interfaces for common evaluation metrics and data sets. The library offers great modularity and a good level of abstraction. However, this also means that it is challenging for beginners who might only want to focus on changing the machine learning parts of the techniques.
 
 <!-- ## The gap -->
-The main problem with these implementations is that they do not deliver state-of-the-art results. No open-source system is available today that matches the performance of the best system proposed more than 4 years ago by [@uhlich15].
+The main problem with these implementations is that they do not deliver state-of-the-art results. No open-source system is available today that matches the performance of the best system proposed more than four years ago by [@uhlich15].
 We believe that the lack of such a baseline has a serious negative impact on future research on source separation.
 Many new methods that were published in the last few years are usually compared to their own baseline implementations, thus showing relative instead of absolute performance gains, so that other researchers cannot assess if a method performs as well as state-of-the-art.
-Also, the lack of a common reference for the community potentially misguides young researchers and students who enter the field of music separation. The result of this can be observed by looking at the popularity of the above-mentioned music separation frameworks on GitHub: all of the frameworks mentioned above combined are less popular than two recent deep learning papers that were accompanied by code such as `MTG/DeepConvSep` from [@chandna17] and `f90/Wave-U-Net` from [@stoller18]. Thus, users might be confused regarding which of these implementations can be considered state-of-the-art.
+Also, the lack of a common reference for the community potentially misguides young researchers and students who enter the field of music separation. The result of this can be observed by looking at the popularity of the above-mentioned music separation frameworks on GitHub: all of the frameworks mentioned above, combined, are less popular than two recent deep learning papers that were accompanied by code such as `MTG/DeepConvSep` from [@chandna17] and `f90/Wave-U-Net` from [@stoller18]. Thus, users might be confused regarding which of these implementations can be considered state-of-the-art.
 
 # Open-Unmix
 
 We propose to close this gap with _Open-Unmix_, which applies machine learning to the specific tasks of music separation.
-With the rise of simple to use machine learning frameworks such as _Keras_, _Tensorflow_, _Pytorch_ or _NNabla_, the technical challenge of developing a music separation system appears to be very low at first glance.
+With the rise of simple to use machine learning frameworks such as _Pytorch_, _Keras_, _Tensorflow_ or _NNabla_, the technical challenge of developing a music separation system appears to be very low at first glance.
 However, the lack of domain knowledge about the specifics of music signals often results in poor performance where issues are difficult to track using learning-based algorithms.
 We therefore designed _Open-Unmix_ to address these issues by relying on procedures that were verified by the community or have proven to work well in the literature.
 
@@ -87,8 +87,7 @@ Our aim was thus to design a system that allows researchers to focus on A) new r
 
 ### Framework specific vs. framework agnostic
 
-_Open-unmix_ is developed in parallel for multiple frameworks to cover the largest number of users. Currently, we support PyTorch and NNabla. The _PyTorch_ version will serve as the reference version due to its simplicity and modularity. The NNabla is close to the PyTorch code.
-We also develop a Tensorflow version which will be released later when Tensorflow 2.0 is stable and will be more production-oriented (inference).
+We choose _PyTorch_ to serve as a reference implementation for this submission due to its balance between simplicity and modularity [openunmixpytorch]. Furthermore, we already ported the core model to [NNabla](https://github.com/sigsep/open-unmix-nnabla) and plan to release a port for Tensorflow 2.0, once the framework is released. Note that the ports will not include pre-trained models as we cannot make sure the ports would yield identical results, thus leaving a single baseline model for researchers to compare with.
 
 ### "MNIST-like"
 
@@ -121,7 +120,7 @@ In the future, we hope the software will be well received by the community. _Ope
 
 First, we provide MUSDB18 [@rafii17] and MUSDB18-HQ [@musdb18hq] which are the largest freely available datasets; this comes with a complete toolchain to easily parse and read the datasets [@musdb].
 We maintain _museval_, the most used evaluation package for source separation [@museval].
-We also are the organizers of the largest source separation evaluation campaign such as [@sisec18]. And, we implemented a reference implementation of multi-channel wiener filter implementation released in [@norbert]. The `sigsep` community is organized and presented on its [own website](https://sigsep.github.com). _Open-Unmix_ itself is hosted on [https://open.unmix.app](https://open.unmix.app), which links to the framework implementations and provide all further information such as audio demos.
+We also are the organizers of the largest source separation evaluation campaign such as [@sisec18]. And, we implemented a reference implementation of multi-channel wiener filter implementation released in [@norbert]. The `sigsep` community is organized and presented on its [own website](https://sigsep.github.com). _Open-Unmix_ itself can be found on [https://open.unmix.app](https://open.unmix.app), which links to all other relevant sites and provides further information such as audio demos.
 
 ## Outlook
 
