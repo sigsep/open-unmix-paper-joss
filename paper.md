@@ -87,7 +87,7 @@ Our aim was thus to design a system that allows researchers to focus on A) new r
 
 ### Framework specific vs. framework agnostic
 
-We choose _PyTorch_ to serve as a reference implementation for this submission due to its balance between simplicity and modularity [openunmixpytorch]. Furthermore, we already ported the core model to [NNabla](https://github.com/sigsep/open-unmix-nnabla) and plan to release a port for Tensorflow 2.0, once the framework is released. Note that the ports will not include pre-trained models as we cannot make sure the ports would yield identical results, thus leaving a single baseline model for researchers to compare with.
+We choose _PyTorch_ to serve as a reference implementation for this submission due to its balance between simplicity and modularity [@openunmixpytorch]. Furthermore, we already ported the core model to [NNabla](https://github.com/sigsep/open-unmix-nnabla) and plan to release a port for Tensorflow 2.0, once the framework is released. Note that the ports will not include pre-trained models as we cannot make sure the ports would yield identical results, thus leaving a single baseline model for researchers to compare with.
 
 ### "MNIST-like"
 
