@@ -64,7 +64,7 @@ While today some commercial systems also exist, such as _Audionamix XTRAX STEMS_
 
 <!-- list of methods -->
 The first publicly available software for source separation was _openBlissart_, released in 2011 [@weninger11]. It is written in C++ and accounts for the class of systems that are based on non-negative matrix factorization (NMF). In 2012, the _Flexible Audio Source Separation Toolbox (FASST)_ was presented in [@ozerov2011general; @salaun14]. It is written in MATLAB/C++ and is also based on NMF methods, but also includes other model-based methods.
-In 2016, the _untwist_ library was proposed in [@roma16]. It comprises several methods, ranging from classical signal-processing-based methods to feed-forward neural networks. The library is written in Python 2.7. Unfortunately, it has not been updated since two years ago and many of its methods are not tested.
+In 2016, the _untwist_ library was proposed in [@roma16]. It comprises several methods, ranging from classical signal-processing-based methods to feed-forward neural networks. The library is written in Python 2.7. Unfortunately, it has not been updated since 2017 and many of its methods are not tested.
 _Nussl_ is a very recent framework, presented in [@manilow18]. It includes a large number of methods and generally focuses on classical signal processing methods rather than machine-learning-based techniques. It has built-in interfaces for common evaluation metrics and data sets. The library offers great modularity and a good level of abstraction. However, this also means that it is challenging for beginners who might only want to focus on changing the machine learning parts of the techniques.
 
 <!-- ## The gap -->
