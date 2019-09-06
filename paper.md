@@ -67,7 +67,6 @@ The first publicly available software for source separation was _openBlissart_, 
 In 2016, the _untwist_ library was proposed in [@roma16]. It comprises several methods, ranging from classical signal-processing-based methods to feed-forward neural networks. The library is written in Python 2.7. Unfortunately, it has not been updated since 2017 and many of its methods are not subjected to automated testing.
 _Nussl_ is a very recent framework, presented in [@manilow18]. It includes a large number of methods and generally focuses on classical signal processing methods rather than machine-learning-based techniques. It has built-in interfaces for common evaluation metrics and data sets. The library offers great modularity and a good level of abstraction. However, this also means that it is challenging for beginners who might only want to focus on changing the machine learning parts of the techniques.
 
-<!-- ## The gap -->
 The main problem with these implementations is that they do not deliver state-of-the-art results. No open-source system is available today that matches the performance of the best system proposed more than four years ago by [@uhlich15].
 We believe that the lack of such a baseline has a serious negative impact on future research on source separation.
 Many new methods that were published in the last few years are usually compared to their own baseline implementations, thus showing relative instead of absolute performance gains, so that other researchers cannot assess if a method performs as well as state-of-the-art.
@@ -94,7 +93,7 @@ We choose _PyTorch_ to serve as a reference implementation due to its balance be
 Keeping in mind that the learning curve can be quite steep in audio processing, we did our best for _Open-unmix_ to be:
 
 - __simple to extend__: The pre/post-processing, data-loading, training and models part of the code is isolated and easy to replace/update. In particular, a specific effort was done to make it easy to replace the model.
-- __not a package__: The software is composed of largely independent and self-containing parts, keeping it easy to use and easy to change. 
+- __not a package__: The software is composed of largely independent and self-containing parts, keeping it easy to use and easy to change.
 - __hackable (MNIST like)__: Due to our objective of making it easier for machine-learning experts to try out music separation, we did our best to stick to the philosophy of baseline implementations for this community. In particular, _Open-unmix_ mimics the famous MNIST example, including the ability to instantly start training on a dataset that is automatically downloaded.
 
 ### Reproducible
