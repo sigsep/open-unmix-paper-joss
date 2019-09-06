@@ -32,10 +32,10 @@ A python package to parse and process the MUSDB18 dataset, the largest open acce
 
 ### norbert: wiener filter implementations
 
-* Code: [norbert](https://github.com/sigsep/norbert/tree/v0.2.0)
-* Status: released on pypi in version 0.2.0 
-* Tag: `v0.2.0`
-* [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3269749.svg)](https://doi.org/10.5281/zenodo.3269749)
+* Code: [norbert](https://github.com/sigsep/norbert/tree/v0.2.1)
+* Status: released on pypi in version 0.2.1
+* Tag: `v0.2.1`
+* [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3386463.svg)](https://doi.org/10.5281/zenodo.3386463)
 
 ## Paper
 
